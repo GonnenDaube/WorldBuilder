@@ -1,0 +1,11 @@
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\bin\Debug\netcoreapp2.0\WorldBuilder.deps.json
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\bin\Debug\netcoreapp2.0\WorldBuilder.runtimeconfig.json
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\bin\Debug\netcoreapp2.0\WorldBuilder.runtimeconfig.dev.json
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\bin\Debug\netcoreapp2.0\WorldBuilder.dll
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\bin\Debug\netcoreapp2.0\WorldBuilder.pdb
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.csprojAssemblyReference.cache
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.csproj.CoreCompileInputs.cache
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.AssemblyInfoInputs.cache
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.AssemblyInfo.cs
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.dll
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.pdb
