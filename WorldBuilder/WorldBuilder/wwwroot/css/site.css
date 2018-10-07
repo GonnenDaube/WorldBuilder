@@ -38,6 +38,22 @@
     width:100%;
 }
 
+.handle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    transform: translateX(-50%) translateY(-50%);
+    background-color: tomato;
+    opacity:0.7;
+    transition:opacity ease-in-out 0.1s;
+    cursor:pointer;
+}
+
+.handle:hover{
+    opacity:1;
+}
+
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */
