@@ -1,8 +1,31 @@
 ﻿// Write your JavaScript code.
 var handleIndex = -1;
+var layerIndex = 0;
 
-let pointsX = [0, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 100];
-let pointsY = [100, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 100];
+let numHandles = 11;
+
+let layers = [
+    {
+        'x': [],
+        'y': []
+    },
+    {
+        'x': [],
+        'y': []
+    },
+    {
+        'x': [],
+        'y': []
+    },
+    {
+        'x': [],
+        'y': []
+    },
+    {
+        'x': [],
+        'y': []
+    }
+];
 
 let curveSmoothness = 20;
 
@@ -10,23 +33,49 @@ let finalPX;
 let finalPY;
 
 $(document).ready(function () {
-    positionHandles(pointsX, pointsY);
-    let curved = cruveLines(pointsX, pointsY);
-    finalPX = curved.x;
-    finalPY = curved.y;
-    let polygon = convertToPolygon(finalPX, finalPY);
-    $('#layer0').attr('style', 'background-color:dodgerblue; clip-path: ' + polygon);
+    fillLayers();
 
-    $(document).on('mousedown', '.handle', function (e) {
-        handleIndex = $(this).index('.handle');
+    updateView();
+
+    $(document).on('mousedown', '.handle:not(.slider .handle)', function (e) {
+        handleIndex = $(this).index('.handle.layer' + layerIndex);
     });
     $(document).on('mouseup', 'body', function () {
         handleIndex = -1;
     });
     $(document).on('mousemove', 'body', function (e) {
-        moveHandleEvent(event, handleIndex);
+        moveHandleEvent(e, handleIndex);
     });
 });
+
+function updateView() {
+    positionHandles(layerIndex);
+    $('.handle:not(.layer' + layerIndex + '):not(.slider .handle)').hide();
+    for (let i = 0; i < layers.length; i++) {
+        let curved = cruveLines(layers[i]);
+        finalPX = curved.x;
+        finalPY = curved.y;
+        let polygon = convertToPolygon(finalPX, finalPY);
+        $('#layer' + i).attr('style', 'clip-path: ' + polygon);
+    }
+}
+
+function updateLayer(target) {
+    layerIndex = target;
+}
+
+function fillLayers() {
+    for (let i = 0; i < layers.length; i++) {
+        layers[i].x.push(0);
+        layers[i].y.push(100);
+        for (let j = 0; j < numHandles; j++) {
+            layers[i].x.push(j * 100 / (numHandles - 1));
+            layers[i].y.push((i + 1) * 100 / layers.length);
+        }
+        layers[i].x.push(100);
+        layers[i].y.push(100);
+    }
+}
 
 function moveHandleEvent(event, index) {
     if (index != -1) {
@@ -40,36 +89,22 @@ function moveHandleEvent(event, index) {
         let perY = 100 * posY / $('#handles').height();
         if (index == 0)
             perX = 0;
-        if (index == $('.handle').size() - 1)
+        if (index == $('.handle.layer' + layerIndex).size() - 1)
             perX = 100;
-        $('.handle:eq(' + index + ')').attr('style', 'left: ' + perX + '%; top: ' + perY + '%;');
+        $('.handle.layer' + layerIndex + ':eq(' + index + ')').attr('style', 'left: ' + perX + '%; top: ' + perY + '%; ');
 
-        updatePointsArray();
+        updatePointsArray(index, perX, perY);
     }
 }
 
-function updatePointsArray() {
-    let x, y;
-    for (let i = 1; i < pointsX.length - 1; i++) {
-        [x, y] = analyseStyle($('.handle:eq(' + (i - 1) + ')').attr('style'));
-        pointsX[i] = Number(x);
-        pointsY[i] = Number(y);
-    }
-    let curved = cruveLines(pointsX, pointsY);
+function updatePointsArray(index, x, y) {
+    layers[layerIndex].x[index + 1] = x;
+    layers[layerIndex].y[index + 1] = y;
+    let curved = cruveLines(layers[layerIndex]);
     finalPX = curved.x;
     finalPY = curved.y;
     let polygon = convertToPolygon(finalPX, finalPY);
-    $('#layer0').attr('style', 'background-color:dodgerblue; clip-path: ' + polygon);
-}
-
-function analyseStyle(style) {
-    let start = style.indexOf('left: ') + 'left: '.length;
-    let end = style.indexOf('%');
-    let x = (style.substring(start, end));
-    start = style.indexOf('top: ') + 'top: '.length;
-    end = style.lastIndexOf('%');
-    let y = (style.substring(start, end));
-    return [x, y];
+    $('#layer' + layerIndex).attr('style', 'clip-path: ' + polygon);
 }
 
 function convertToPolygon(pX, pY) {
@@ -81,7 +116,9 @@ function convertToPolygon(pX, pY) {
     return p;
 }
 
-function cruveLines(pX, pY) {
+function cruveLines(p) {
+    let pX = p.x;
+    let pY = p.y;
     let x = [];
     x.push(pX[0]);
     x.push(pX[1]);
@@ -118,8 +155,8 @@ function getCurveSegment(x1, x2, x3, y1, y2, y3) {
     return { 'x': x, 'y': y };
 }
 
-function positionHandles(pX, pY) {
-    for (let i = 1; i < pX.length - 1; i++) {
-        $('.handle:eq(' + (i - 1) + ')').attr('style', 'left: '+ pX[i] + '%; top: '+ pY[i] +'%;');
+function positionHandles(layerIndex) {
+    for (let i = 1; i < layers[layerIndex].x.length - 1; i++) {
+        $('.handle.layer' + layerIndex + ':eq(' + (i - 1) + ')').attr('style', 'left: ' + layers[layerIndex].x[i] + '%; top: ' + layers[layerIndex].y[i] + '%; ');
     }
 }
