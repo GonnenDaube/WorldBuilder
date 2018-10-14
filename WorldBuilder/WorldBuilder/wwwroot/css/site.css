@@ -1,4 +1,15 @@
-﻿body {
+﻿:root {
+    --dark-color: rgb(30, 30, 39);
+    --light-color: rgb(235, 235, 235);
+    --active-color: rgb(0, 255, 144);
+    --danger-color: #c36251;
+}
+
+a:focus, button:focus{
+    outline:none;
+}
+
+body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
@@ -34,8 +45,21 @@
     margin-top: 100px;
 }
 
+.margin-bottom-30{
+    margin-bottom:30px;
+}
+
 .padding-0{
     padding:0;
+}
+
+.padding-bottom-30{
+    padding-bottom:30px;
+}
+
+section{
+    display:block;
+    overflow:auto;
 }
 
 .horizontal-center{
@@ -73,7 +97,7 @@ aside{
     top:0;
     width:300px;
     height:100%;
-    background-color:rgb(30, 30, 39);
+    background-color:var(--dark-color);
 }
 
 .slider{
@@ -86,7 +110,7 @@ aside{
         width: 10px;
         height: 10px;
         border-radius: 5px;
-        background-color: rgb(0, 255, 144);
+        background-color: var(--active-color);
         opacity: 1;
         transition: width ease-in-out 0.1s, height ease-in-out 0.1s, border-radius ease-in-out 0.1s;
     }
@@ -103,7 +127,7 @@ aside{
     left:0;
     width:100%;
     height:3px;
-    background-color:rgb(0, 255, 144);
+    background-color:var(--active-color);
 }
 
 #layer0{
@@ -120,6 +144,97 @@ aside{
 }
 #layer4 {
     background-color: rgb(7, 27, 18);
+}
+
+.button-group button{
+    float:inherit;
+}
+
+.button-group{
+    position:relative;
+    display:inline-block;
+}
+
+.button {
+    border: none;
+    background-image: none;
+    background-color: transparent;
+    height: 35px;
+    width: 35px;
+    font-size: 25px;
+    outline: none;
+}
+
+.button-info {
+    width: auto;
+    font-size: 16px;
+    transition: color ease-in-out 0.1s;
+}
+
+.button-info:hover, .button-info:focus{
+    color:var(--active-color);
+}
+
+    .button-info.danger:hover, .button-info.danger:focus {
+        color: var(--danger-color);
+    }
+
+    .button i {
+        transition: color ease-in-out 0.1s;
+        text-decoration:none;
+        font-size: inherit;
+    }
+
+    .button.light i {
+        color: var(--light-color);
+    }
+
+    .button.dark i {
+        color: var(--dark-color);
+    }
+
+    .button:hover i, .button:focus i {
+        color: var(--active-color);
+    }
+
+.modal-content{
+    border:none;
+    border-radius:0px;
+    background-color:var(--dark-color);
+    color:var(--light-color);
+}
+
+.modal-header{
+    border:none;
+    color:inherit;
+}
+
+.modal-content .close{
+    color:var(--active-color);
+    text-shadow:none;
+    opacity:0.7;
+}
+
+.modal-body p{
+    color:var(--light-color);
+}
+
+.modal-content .close:hover, .modal-content .close:focus{
+    opacity:1.0;
+}
+
+.modal-title{
+    color:var(--active-color);
+}
+
+.modal-body{
+    border:none;
+    color:inherit;
+}
+
+.modal-footer{
+    border:none;
+    color:inherit;
 }
 
 /* Hide/rearrange for smaller screens */

@@ -17,16 +17,24 @@ function moveSliderEvent(event, sliderHandle) {
         let slider = $(sliderHandle).parent().closest('.slider');
         let mouseRelPos = event.clientX - $(slider).offset().left;
         let pos = mouseRelPos / slider.width();
-        let range = Number(slider.find('input[type="range"]').attr('max')) - Number(slider.find('input[type="range"]').attr('min'));
-        let target = Math.round(pos * range + Number(slider.find('input[type="range"]').attr('min')));
-        if (target > Number(slider.find('input[type="range"]').attr('max')))
-            target = Number(slider.find('input[type="range"]').attr('max'));
-        if (target < Number(slider.find('input[type="range"]').attr('min')))
-            target = Number(slider.find('input[type="range"]').attr('min'));
+        let min = Number(slider.find('input[type="range"]').attr('min'));
+        let max = Number(slider.find('input[type="range"]').attr('max'));
+        let range = max - min;
+        let target = Math.round(pos * range + min);
+        if (target > max)
+            target = max;
+        if (target < min)
+            target = min;
         slider.find('input[type="range"]').attr('value', target);
+        let value = slider.attr('data-target');
+        if (value != undefined)
+            $(value).text(target);
+        target -= min;
         pos = 100 / range * target;
         $(sliderHandle).attr('style', 'left:' + pos + '%');
-        updateLayer(target);
-        updateView();
+        if (layerIndex != -1) {
+            updateLayer(target);
+            updateView();
+        }
     }
 }

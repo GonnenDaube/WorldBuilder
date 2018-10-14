@@ -1,0 +1,38 @@
+﻿<div id="newWorldModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create a new world</h4>
+            </div>
+            <div class="modal-body">
+                <section data-name="world-size">
+                    <p class="col-lg-10 col-md-10 pull-left horizontal-center">
+                        World size:
+                        <span id="world-size">10</span>
+                    </p>
+                    <div class="slider col-md-10 col-lg-10 horizontal-center" data-target="#world-size">
+                        <div class="bar"></div>
+                        <div class="handle" style="left:0%"></div>
+                        <input type="range" min="10" max="100" class="hidden" value="10"/>
+                    </div>
+                </section>
+                <section data-name="world-points">
+                    <p class="col-lg-10 col-md-10 pull-left horizontal-center">
+                        World points:
+                        <span id="world-points">10</span>
+                    </p>
+                    <div class="slider col-md-10 col-lg-10 horizontal-center" data-target="#world-points">
+                        <div class="bar"></div>
+                        <div class="handle" style="left:0%"></div>
+                        <input type="range" min="10" max="100" class="hidden" value="10"/>
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button danger button-info" data-dismiss="modal">Close</button>
+                <button type="button" class="button button-info" data-trigger="create-new-world">Create</button>
+            </div>
+        </div>
+    </div>
+</div>

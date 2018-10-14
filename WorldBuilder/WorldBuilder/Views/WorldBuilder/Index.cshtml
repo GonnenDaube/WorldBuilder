@@ -12,65 +12,14 @@
         <div id="layer4" class="full-size" style=""></div>
     </div>
     <div id="handles" class="full-size">
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
-        <div class="handle layer0"></div>
 
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-        <div class="handle layer1"></div>
-
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-        <div class="handle layer2"></div>
-
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-        <div class="handle layer3"></div>
-
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
-        <div class="handle layer4"></div>
+        @for (int j = 0; j < 5; j++)
+            {
+                for (int i = 0; i < 11; i++)
+                {
+                    <div class="handle layer@(j)"></div>
+                }
+            }
     </div>
 </content>
 

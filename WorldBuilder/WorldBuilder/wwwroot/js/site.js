@@ -1,6 +1,6 @@
 ﻿// Write your JavaScript code.
 var handleIndex = -1;
-var layerIndex = 0;
+var layerIndex = window.location.pathname.includes('WorldBuilder/Index"') -1;
 
 let numHandles = 11;
 
@@ -46,6 +46,19 @@ $(document).ready(function () {
     $(document).on('mousemove', 'body', function (e) {
         moveHandleEvent(e, handleIndex);
     });
+
+    $(document).on('click', 'button[data-trigger="create-new-world"]', function (e) {
+        sessionStorage.setItem("world-size", $('world-size').text());
+        sessionStorage.setItem("world-points", $('world-points').text());
+
+        window.location = "WorldBuilder/Index";
+    });
+
+    $(document).on('click', '#newWorldModal button[data-dismiss="modal"]', function (e) {
+        $('#world-size').text('10');
+        $('#world-points').text('10');
+        $('.slider .handle').attr('style', 'left:0%');
+    })
 });
 
 function updateView() {
@@ -78,7 +91,7 @@ function fillLayers() {
 }
 
 function moveHandleEvent(event, index) {
-    if (index != -1) {
+    if (index != -1 && layerIndex != -1) {
         let mX = event.clientX;
         let mY = event.clientY;
         let pX = $('#handles').offset().left;
@@ -98,13 +111,15 @@ function moveHandleEvent(event, index) {
 }
 
 function updatePointsArray(index, x, y) {
-    layers[layerIndex].x[index + 1] = x;
-    layers[layerIndex].y[index + 1] = y;
-    let curved = cruveLines(layers[layerIndex]);
-    finalPX = curved.x;
-    finalPY = curved.y;
-    let polygon = convertToPolygon(finalPX, finalPY);
-    $('#layer' + layerIndex).attr('style', 'clip-path: ' + polygon);
+    if (layerIndex != -1) {
+        layers[layerIndex].x[index + 1] = x;
+        layers[layerIndex].y[index + 1] = y;
+        let curved = cruveLines(layers[layerIndex]);
+        finalPX = curved.x;
+        finalPY = curved.y;
+        let polygon = convertToPolygon(finalPX, finalPY);
+        $('#layer' + layerIndex).attr('style', 'clip-path: ' + polygon);
+    }
 }
 
 function convertToPolygon(pX, pY) {
@@ -156,7 +171,9 @@ function getCurveSegment(x1, x2, x3, y1, y2, y3) {
 }
 
 function positionHandles(layerIndex) {
-    for (let i = 1; i < layers[layerIndex].x.length - 1; i++) {
-        $('.handle.layer' + layerIndex + ':eq(' + (i - 1) + ')').attr('style', 'left: ' + layers[layerIndex].x[i] + '%; top: ' + layers[layerIndex].y[i] + '%; ');
+    if (layerIndex != -1) {
+        for (let i = 1; i < layers[layerIndex].x.length - 1; i++) {
+            $('.handle.layer' + layerIndex + ':eq(' + (i - 1) + ')').attr('style', 'left: ' + layers[layerIndex].x[i] + '%; top: ' + layers[layerIndex].y[i] + '%; ');
+        }
     }
 }
