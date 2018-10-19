@@ -1,9 +1,10 @@
-﻿
+﻿@model WorldBuilder.Models.WorldBuilderViewModel
 @{
     ViewData["Title"] = "New World";
+    
 }
 
-<content class="col-md-12 col-lg-12 margin-top-30" style="height:800px; border:solid 1px gray">
+<content class="col-md-12 col-lg-12 margin-top-30" style="height:750px; border:solid 1px gray; clip-path: inset(0 0 0 0)">
     <div id="background" class="full-size">
         <div id="layer0" class="full-size" style=""></div>
         <div id="layer1" class="full-size" style=""></div>
@@ -11,17 +12,12 @@
         <div id="layer3" class="full-size" style=""></div>
         <div id="layer4" class="full-size" style=""></div>
     </div>
-    <div id="handles" class="full-size">
-
-        @for (int j = 0; j < 5; j++)
-            {
-                for (int i = 0; i < 11; i++)
-                {
-                    <div class="handle layer@(j)"></div>
-                }
-            }
-    </div>
+    <div id="handles" class="full-size"></div>
 </content>
+
+<div class="col-md-12 col-lg-12 margin-top-30 margin-bottom-30 scroll-bar">
+    <div class="scroll-handle"></div>
+</div>
 
 <aside>
     <div class="slider col-md-10 col-lg-10 margin-top-100 horizontal-center">

@@ -12,6 +12,7 @@ a:focus, button:focus{
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+    overflow-x:hidden;
 }
 
 /* Wrapping element */
@@ -235,6 +236,23 @@ aside{
 .modal-footer{
     border:none;
     color:inherit;
+}
+
+.scroll-bar{
+    height:10px;
+    background-color:rgb(189, 189, 189);
+    border:none;
+    border-radius:5px;
+}
+
+.scroll-handle{
+    position:absolute;
+    top:0;
+    height:100%;
+    background-color:rgb(137, 137, 137);
+    border:none;
+    border-radius:5px;
+    transform:translateX(-50%);
 }
 
 /* Hide/rearrange for smaller screens */

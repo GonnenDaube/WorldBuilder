@@ -1,29 +1,35 @@
 ﻿// Write your JavaScript code.
 var handleIndex = -1;
-var layerIndex = window.location.pathname.includes('WorldBuilder/Index"') -1;
+var layerIndex = window.location.pathname.includes('/WorldBuilder/Index') ? 0 : -1;
 
-let numHandles = 11;
+let numHandles;
+let worldSize;
 
 let layers = [
     {
         'x': [],
-        'y': []
+        'y': [],
+        'size': undefined
     },
     {
         'x': [],
-        'y': []
+        'y': [],
+        'size': undefined
     },
     {
         'x': [],
-        'y': []
+        'y': [],
+        'size': undefined
     },
     {
         'x': [],
-        'y': []
+        'y': [],
+        'size': undefined
     },
     {
         'x': [],
-        'y': []
+        'y': [],
+        'size': undefined
     }
 ];
 
@@ -48,15 +54,15 @@ $(document).ready(function () {
     });
 
     $(document).on('click', 'button[data-trigger="create-new-world"]', function (e) {
-        sessionStorage.setItem("world-size", $('world-size').text());
-        sessionStorage.setItem("world-points", $('world-points').text());
+        sessionStorage.setItem("world-size", $('#world-size').text());
+        sessionStorage.setItem("world-points", $('#world-points').text());
 
         window.location = "WorldBuilder/Index";
     });
 
     $(document).on('click', '#newWorldModal button[data-dismiss="modal"]', function (e) {
         $('#world-size').text('10');
-        $('#world-points').text('10');
+        $('#world-points').text('11');
         $('.slider .handle').attr('style', 'left:0%');
     })
 });
@@ -78,15 +84,33 @@ function updateLayer(target) {
 }
 
 function fillLayers() {
+    numHandles = sessionStorage.getItem("world-points");
+    worldSize = sessionStorage.getItem("world-size");
+
+    let width = 100 * (10 / worldSize);
+    $('.scroll-handle').attr('style', 'left:' + width / 2 + '%; width:' + width + '%');
+
     for (let i = 0; i < layers.length; i++) {
+        for (let j = 0; j < numHandles; j++) {
+            $('#handles').append('<div class="handle layer' + i + '"></div>');
+        }
+    }
+
+    let min = 100;
+    let max = worldSize * 10;
+    let interval = (max - min) / (layers.length - 1);
+
+    for (let i = 0; i < layers.length; i++) {
+        let size = min + interval * i;
         layers[i].x.push(0);
         layers[i].y.push(100);
         for (let j = 0; j < numHandles; j++) {
-            layers[i].x.push(j * 100 / (numHandles - 1));
-            layers[i].y.push((i + 1) * 100 / layers.length);
+            layers[i].x.push(j * size / (numHandles - 1));
+            layers[i].y.push(i * 100 / layers.length);
         }
-        layers[i].x.push(100);
+        layers[i].x.push(size);
         layers[i].y.push(100);
+        layers[i].size = size;
     }
 }
 
@@ -103,7 +127,7 @@ function moveHandleEvent(event, index) {
         if (index == 0)
             perX = 0;
         if (index == $('.handle.layer' + layerIndex).size() - 1)
-            perX = 100;
+            perX = layers[layerIndex].size;
         $('.handle.layer' + layerIndex + ':eq(' + index + ')').attr('style', 'left: ' + perX + '%; top: ' + perY + '%; ');
 
         updatePointsArray(index, perX, perY);
