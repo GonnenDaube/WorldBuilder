@@ -39,9 +39,10 @@ let finalPX;
 let finalPY;
 
 $(document).ready(function () {
-    fillLayers();
-
-    updateView();
+    if (layerIndex != -1) {
+        fillLayers();
+        updateView();
+    }
 
     $(document).on('mousedown', '.handle:not(.slider .handle)', function (e) {
         handleIndex = $(this).index('.handle.layer' + layerIndex);
@@ -90,22 +91,28 @@ function fillLayers() {
     let width = 100 * (10 / worldSize);
     $('.scroll-handle').attr('style', 'left:' + width / 2 + '%; width:' + width + '%');
 
+    let q = Math.pow(worldSize / 10, 1 / (layers.length - 1));
+
     for (let i = 0; i < layers.length; i++) {
-        for (let j = 0; j < numHandles; j++) {
+        let num = Math.round(numHandles * Math.pow(q, 1 - layers.length + i));
+        if (num % 2 == 0)
+            num++;
+        for (let j = 0; j < num; j++) {
             $('#handles').append('<div class="handle layer' + i + '"></div>');
         }
     }
 
     let min = 100;
-    let max = worldSize * 10;
-    let interval = (max - min) / (layers.length - 1);
 
     for (let i = 0; i < layers.length; i++) {
-        let size = min + interval * i;
+        let size = min * Math.pow(q, i);
         layers[i].x.push(0);
         layers[i].y.push(100);
-        for (let j = 0; j < numHandles; j++) {
-            layers[i].x.push(j * size / (numHandles - 1));
+        let num = Math.round(numHandles * Math.pow(q, 1 - layers.length + i));
+        if (num % 2 == 0)
+            num++;
+        for (let j = 0; j < num; j++) {
+            layers[i].x.push(j * size / (num - 1));
             layers[i].y.push(i * 100 / layers.length);
         }
         layers[i].x.push(size);
@@ -127,7 +134,15 @@ function moveHandleEvent(event, index) {
         if (index == 0)
             perX = 0;
         if (index == $('.handle.layer' + layerIndex).size() - 1)
-            perX = layers[layerIndex].size;
+            perX = 100;
+        if (perY < 0)
+            perY = 0;
+        if (perY > 100)
+            perY = 100;
+        if (perX < 0)
+            perX = 0;
+        if (perX > 100)
+            perX = 100;
         $('.handle.layer' + layerIndex + ':eq(' + index + ')').attr('style', 'left: ' + perX + '%; top: ' + perY + '%; ');
 
         updatePointsArray(index, perX, perY);
@@ -136,7 +151,11 @@ function moveHandleEvent(event, index) {
 
 function updatePointsArray(index, x, y) {
     if (layerIndex != -1) {
-        layers[layerIndex].x[index + 1] = x;
+        let style = $('.scroll-handle').attr('style');
+        let width = Number(style.substring(style.indexOf('width:') + 'width:'.length, style.lastIndexOf('%')));
+        let left = Number(style.substring(style.indexOf('left:') + 'left:'.length, style.indexOf('%'))) - width / 2;
+        left = 100 * left / (100 - width);
+        layers[layerIndex].x[index + 1] = x + (layers[layerIndex].size - 100) * left / 100;
         layers[layerIndex].y[index + 1] = y;
         let curved = cruveLines(layers[layerIndex]);
         finalPX = curved.x;
@@ -156,23 +175,27 @@ function convertToPolygon(pX, pY) {
 }
 
 function cruveLines(p) {
+    let style = $('.scroll-handle').attr('style');
+    let width = Number(style.substring(style.indexOf('width:') + 'width:'.length, style.lastIndexOf('%')));
+    let left = Number(style.substring(style.indexOf('left:') + 'left:'.length, style.indexOf('%'))) - width / 2;
+    left = 100 * left / (100 - width);
     let pX = p.x;
     let pY = p.y;
     let x = [];
-    x.push(pX[0]);
-    x.push(pX[1]);
+    x.push(pX[0] - (p.size - 100) * left / 100);
+    x.push(pX[1] - (p.size - 100) * left / 100);
     let y = [];
     y.push(pY[0]);
     y.push(pY[1]);
     let segment;
     
     for (let i = 1; i < pX.length - 3; i += 2) {
-        segment = getCurveSegment(pX[i], pX[i + 1], pX[i + 2], pY[i], pY[i + 1], pY[i + 2]);
+        segment = getCurveSegment(pX[i] - (p.size - 100) * left / 100, pX[i + 1] - (p.size - 100) * left / 100, pX[i + 2] - (p.size - 100) * left / 100, pY[i], pY[i + 1], pY[i + 2]);
         x = x.concat(segment.x);
         y = y.concat(segment.y);
     }
 
-    x.push(pX[pX.length - 1]);
+    x.push(pX[pX.length - 1] - (p.size - 100) * left / 100);
     y.push(pY[pY.length - 1]);
     return { 'x': x, 'y': y };
 }
@@ -196,8 +219,13 @@ function getCurveSegment(x1, x2, x3, y1, y2, y3) {
 
 function positionHandles(layerIndex) {
     if (layerIndex != -1) {
+        let style = $('.scroll-handle').attr('style');
+        let width = Number(style.substring(style.indexOf('width:') + 'width:'.length, style.lastIndexOf('%')));
+        let left = Number(style.substring(style.indexOf('left:') + 'left:'.length, style.indexOf('%'))) - width / 2;
+        left = 100 * left / (100 - width);//map left between 0% and 100%
+        let disp = (layers[layerIndex].size - 100) * left / 100;
         for (let i = 1; i < layers[layerIndex].x.length - 1; i++) {
-            $('.handle.layer' + layerIndex + ':eq(' + (i - 1) + ')').attr('style', 'left: ' + layers[layerIndex].x[i] + '%; top: ' + layers[layerIndex].y[i] + '%; ');
+            $('.handle.layer' + layerIndex + ':eq(' + (i - 1) + ')').attr('style', 'left: ' + (layers[layerIndex].x[i] - disp) + '%; top: ' + layers[layerIndex].y[i] + '%; ');
         }
     }
 }

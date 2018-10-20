@@ -253,6 +253,7 @@ aside{
     border:none;
     border-radius:5px;
     transform:translateX(-50%);
+    cursor:pointer;
 }
 
 /* Hide/rearrange for smaller screens */
