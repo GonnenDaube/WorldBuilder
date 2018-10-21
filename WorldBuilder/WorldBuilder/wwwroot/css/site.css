@@ -83,9 +83,10 @@ section{
     border-radius: 10px;
     transform: translateX(-50%) translateY(-50%);
     background-color: tomato;
-    opacity:0.7;
-    transition:opacity ease-in-out 0.1s;
-    cursor:pointer;
+    opacity: 0.7;
+    transition: opacity ease-in-out 0.1s;
+    cursor: pointer;
+    user-select: none;
 }
 
 .handle:hover{
@@ -254,6 +255,7 @@ aside{
     border-radius:5px;
     transform:translateX(-50%);
     cursor:pointer;
+    user-select:none;
 }
 
 /* Hide/rearrange for smaller screens */

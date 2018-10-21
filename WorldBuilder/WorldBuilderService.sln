@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorldBuilder", "WorldBuilder\WorldBuilder.csproj", "{A49B0CE0-4ACA-4CA2-A05C-9F6E3B4CFA31}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorldStorage", "WorldStorage\WorldStorage.csproj", "{28ADA57A-B445-4433-BBD8-B7B5F2D668DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A49B0CE0-4ACA-4CA2-A05C-9F6E3B4CFA31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A49B0CE0-4ACA-4CA2-A05C-9F6E3B4CFA31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A49B0CE0-4ACA-4CA2-A05C-9F6E3B4CFA31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A49B0CE0-4ACA-4CA2-A05C-9F6E3B4CFA31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28ADA57A-B445-4433-BBD8-B7B5F2D668DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28ADA57A-B445-4433-BBD8-B7B5F2D668DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28ADA57A-B445-4433-BBD8-B7B5F2D668DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28ADA57A-B445-4433-BBD8-B7B5F2D668DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FF776644-FA6A-491B-B6BC-75A6C5B12A82}
+	EndGlobalSection
+EndGlobal

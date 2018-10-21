@@ -9,3 +9,6 @@ D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debu
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.AssemblyInfo.cs
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.dll
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.pdb
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\bin\Debug\netcoreapp2.0\WorldStorage.dll
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\bin\Debug\netcoreapp2.0\WorldStorage.pdb
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldBuilder\obj\Debug\netcoreapp2.0\WorldBuilder.csproj.CopyComplete
