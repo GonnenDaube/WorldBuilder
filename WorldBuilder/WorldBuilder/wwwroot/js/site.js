@@ -65,7 +65,7 @@ let finalPX;
 let finalPY;
 
 $(document).ready(function () {
-    callValues();
+    //callValues();
     if (layerIndex != -1) {
         fillLayers();
         updateView();
