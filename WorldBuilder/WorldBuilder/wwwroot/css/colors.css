@@ -1,0 +1,6 @@
+﻿:root {
+    --dark-color: rgb(30, 30, 39);
+    --light-color: rgb(235, 235, 235);
+    --active-color: rgb(0, 255, 144);
+    --danger-color: #c36251;
+}

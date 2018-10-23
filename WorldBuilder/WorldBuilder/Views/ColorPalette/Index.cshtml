@@ -3,11 +3,78 @@
     ViewData["Title"] = "Collor Palette";
 }
 
-<content class="col-lg-12 col-md-12 col-sm-12 margin-top-30" style="height:750px;">
+<content class="col-lg-10 col-md-10 col-sm-10 margin-top-30 horizontal-center" style="height:750px;">
     <div class="color-picker">
-        <div class="satlum-mat large col-lg-8 col-md-8 padding-0" style="background: linear-gradient(0deg, #000, rgb(255,255,255,0.0)), linear-gradient(270deg, rgb(255,0,0), #fff)">
+        <div class="satlum-mat large col-lg-7 col-md-7 padding-0" style="background: linear-gradient(0deg, #000, rgb(255,255,255,0.0)), linear-gradient(270deg, rgba(255,0,0,1), #fff)">
             <div style="top:0%; left:100%">
                 <i class="fas fa-plus"></i>
+            </div>
+        </div>
+        <div class="hue large col-lg-1 col-md-1 padding-0">
+            <div style="background-color:rgb(255,0,0); top:0%;">
+            </div>
+        </div>
+        <div class="final large col-lg-4 col-md-4 margin-left-30">
+            <div class="color" style="background-color:rgb(255,0,0)"></div>
+            <section class="margin-top-30">
+                <label>RGB:</label>
+                <ul>
+                    <li>
+                        <label>Red:</label>
+                        <span>
+                            <input data-target="r" type="number" value="255" readonly />
+                        </span>
+                    </li>
+                    <li>
+                        <label>Green:</label>
+                        <span>
+                            <input data-target="g" type="number" value="0" readonly/>
+                        </span>
+                    </li>
+                    <li>
+                        <label>Blue:</label>
+                        <span>
+                            <input data-target="b" type="number" value="0" readonly/>
+                        </span>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <label>HSL:</label>
+                <ul>
+                    <li>
+                        <label>Hue:</label>
+                        <span>
+                            <input data-target="h" type="number" value="0" readonly/>
+                            <label>&#176</label>
+                        </span>
+                    </li>
+                    <li>
+                        <label>Saturation:</label>
+                        <span>
+                            <input data-target="s" type="number" value="100" readonly/>
+                            <label>%</label>
+                        </span>
+                    </li>
+                    <li>
+                        <label>Lightness:</label>
+                        <span>
+                            <input data-target="l" type="number" value="100" readonly/>
+                            <label>%</label>
+                        </span>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <label>Opacity:</label>
+                <span>
+                    <input data-target="a" type="number" value="100" readonly/>
+                    <label>%</label>
+                </span>
+            </section>
+        </div>
+        <div class="opacity large col-lg-12 col-md-12 padding-0">
+            <div style="left:100%">
             </div>
         </div>
     </div>
