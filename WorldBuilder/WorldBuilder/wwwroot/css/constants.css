@@ -4,6 +4,14 @@
     overflow-x: hidden;
 }
 
+*{
+    font-family:'Trebuchet MS';
+}
+
+.pos-absolute{
+    position:absolute;
+}
+
 a:focus, button:focus {
     outline: none;
 }

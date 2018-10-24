@@ -1,30 +1,4 @@
-﻿//contants
-var siteURL = 'http://localhost:50411/';
-var apiURL = 'http://localhost:50223/WorldApi/';
-//
-
-
-//example api ajax
-function callValues() {
-    $.ajax({
-        url: siteURL + 'WorldBuilder/_GetValues',
-        type: 'GET',
-        data: {
-            attr1: 5,
-            attr2: 6
-        },
-        datatype: 'json',
-        success: function (response) {
-            for (let i = 0; i < response.length; i++) {
-                alert(response[i]);
-            }
-        },
-        error: function (response) {
-
-        }
-    });
-}
-
+﻿
 var handleIndex = -1;
 var layerIndex = window.location.pathname.includes('/WorldBuilder/Index') ? 0 : -1;
 
@@ -93,6 +67,11 @@ $(document).ready(function () {
         $('#world-points').text('11');
         $('.slider .handle').attr('style', 'left:0%');
     })
+
+    if (window.location.pathname.includes('/ColorPalette')) {
+        //Color Palette Index
+        getColors();
+    }
 });
 
 function updateView() {

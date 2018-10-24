@@ -5034,7 +5034,8 @@
         "framework": ".NETCoreApp,Version=v2.0",
         "dependencies": {
           "Microsoft.AspNetCore.All": "2.0.9",
-          "Microsoft.NETCore.App": "2.0.0"
+          "Microsoft.NETCore.App": "2.0.0",
+          "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.3"
         },
         "compile": {
           "bin/placeholder/WorldStorage.dll": {}

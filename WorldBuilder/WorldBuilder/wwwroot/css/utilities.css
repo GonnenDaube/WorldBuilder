@@ -1,0 +1,31 @@
+﻿.btn-default {
+    border: none;
+    font-size: 20px;
+    border-radius:15px;
+    min-width:100px;
+    height:35px;
+}
+
+.btn-default.primary{
+    background-color:var(--active-color);
+    color:var(--dark-color);
+}
+
+.btn-default.dark{
+    background-color:var(--dark-color);
+    color:var(--light-color);
+}
+
+    .btn-default.light {
+        background-color: var(--light-color);
+        color: var(--dark-color);
+    }
+
+    .btn-default.primary:focus{
+        box-shadow:rgba(0,0,0,0.4) 2.5px 2.5px 10px;
+    }
+
+    .btn-default.primary:active {
+        color: var(--light-color);
+        background-color: var(--active-color);
+    }

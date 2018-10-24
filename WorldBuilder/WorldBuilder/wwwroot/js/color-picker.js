@@ -81,6 +81,16 @@
 
         updateFinalColor();
     });
+
+    $(document).on('click', '.color-picker button[data-target="submit-color"]', function(){
+        let picker = $(this).parent().closest('.color-picker');
+        let r = picker.find('input[data-target="r"]').val();
+        let g = picker.find('input[data-target="g"]').val();
+        let b = picker.find('input[data-target="b"]').val();
+        let a = picker.find('input[data-target="a"]').val();
+
+        postColor(r, g, b, a);
+    });
 });
 
 function updateFinalColor() {
