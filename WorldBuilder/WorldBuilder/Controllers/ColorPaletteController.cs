@@ -24,7 +24,14 @@ namespace WorldBuilder.Controllers
         [HttpGet]
         public async Task<ActionResult> _GetColors()
         {
-            List<Tuple<byte, byte, byte, float>> res = await new ColorController().GetAsync();
+            List<Tuple<string, byte, byte, byte, float>> res = await new ColorController().GetAsync();
+            return Json(res);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> _DeleteColor(string id)
+        {
+            int res = await new ColorController().DeleteAsync(id);
             return Json(res);
         }
     }

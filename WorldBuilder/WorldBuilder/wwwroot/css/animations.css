@@ -1,0 +1,48 @@
+﻿body {
+}
+
+@keyframes cross{
+    from{
+        width:0;
+    }
+    to{
+        width:50%;
+    }
+}
+
+.cross{
+    height:50px;
+    width:50px;
+    background-color:transparent;
+}
+
+    .cross:hover div:nth-child(1) {
+        position: absolute;
+        left: 0;
+        top: 0;
+        animation-name: cross;
+        height: 5px;
+        transform: translateY(25px) translateY(-50%) translateX(25px) translateX(-50%) rotate(315deg);
+        animation-duration: 0.25s;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-in-out;
+        animation-delay: 0.1s;
+        animation-fill-mode: forwards;
+        background-color: var(--light-color);
+        border:solid 1px var(--dark-color);
+    }
+
+    .cross:hover div:nth-child(2) {
+        position: absolute;
+        left: 0;
+        top: 0;
+        animation-name: cross;
+        height: 5px;
+        transform: translateY(25px) translateY(-50%) translateX(25px) translateX(-50%) rotate(45deg);
+        animation-duration: 0.35s;
+        animation-iteration-count: 1;
+        animation-timing-function: ease-in-out;
+        animation-fill-mode: forwards;
+        background-color: var(--light-color);
+        border: solid 1px var(--dark-color);
+    }

@@ -33,11 +33,10 @@ function postColor(r, g, b, a) {
         },
         datatype: 'json',
         success: function (response) {
-            if (response == 1)
-                alert("Successful");
+            if (response)
+                window.location = window.location;
         },
         error: function (response) {
-
         }
     });
 }
@@ -48,9 +47,34 @@ function getColors() {
         type: 'GET',
         datatype: 'json',
         success: function (response) {
+            if(response != null)
             for (let i = 0; i < response.length; i++) {
-                $('ul[data-target="colors"]').append('<li style="background-color:rgba(' + response[i].item1 + ',' + response[i].item2 + ',' + response[i].item3 + ',' + Number(response[i].item4) + ')"></li>');
+                $('div[data-target="colors"]').append(
+                    '<div class="color" data-color-id="'
+                    + response[i].item1 + '" style="background-color:rgba('
+                    + response[i].item2 + ','
+                    + response[i].item3 + ','
+                    + response[i].item4 + ','
+                    + Number(response[i].item5) + ')"><div class="cross"><div></div><div></div></div></li>');
             }
+        },
+        error: function (response) {
+
+        }
+    });
+}
+
+function deleteColor(id) {
+    $.ajax({
+        url: siteURL + 'ColorPalette/_DeleteColor',
+        type: 'DELETE',
+        data: {
+            id:id
+        },
+        datatype: 'json',
+        success: function (response) {
+            if(response)
+                window.location = window.location;
         },
         error: function (response) {
 

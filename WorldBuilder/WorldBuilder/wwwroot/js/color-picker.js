@@ -91,6 +91,11 @@
 
         postColor(r, g, b, a);
     });
+
+    $(document).on('click', '.server-color .color', function () {
+        let id = $(this).attr('data-color-id');
+        deleteColor(id);
+    });
 });
 
 function updateFinalColor() {
