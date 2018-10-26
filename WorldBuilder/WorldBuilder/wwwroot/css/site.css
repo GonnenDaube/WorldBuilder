@@ -336,6 +336,12 @@ aside{
         border:solid 3px var(--dark-color);
         box-shadow:rgba(0,0,0,0.2) 0px 2.5px 20px;
     }
+
+.server-color{
+    height:85%;
+    overflow-y:scroll;
+}
+
 .server-color .color{
     position:relative;
     width:50px;
@@ -351,6 +357,24 @@ aside{
     left:0;
     top:0;
 }
+
+.dropzone {
+    border: dashed 5px var(--active-color);
+    background-color: var(--trans-active-color);
+    opacity: 0.5;
+    transition: opacity 0.25s;
+    cursor: pointer;
+    overflow-y:hidden;
+}
+
+.dropzone label{
+    cursor:pointer;
+}
+
+.dropzone.dragover, .dropzone:hover{
+    opacity:0.75;
+}
+
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
     /* Hide captions */

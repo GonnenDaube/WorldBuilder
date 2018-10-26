@@ -22,9 +22,16 @@ namespace WorldBuilder.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult> _GetColors()
+        public async Task<ActionResult> _GetColors(int offset, int ammount)
         {
-            List<Tuple<string, byte, byte, byte, float>> res = await new ColorController().GetAsync();
+            List<Tuple<string, byte, byte, byte, float>> res = await new ColorController().GetAsync(offset, ammount);
+            return Json(res);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> _GetColorNumber()
+        {
+            int res = await new ColorController().GetNumberAsync();
             return Json(res);
         }
 

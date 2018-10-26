@@ -1,25 +1,12 @@
 ﻿var siteURL = 'http://localhost:50411/';
 var apiURL = 'http://localhost:50223/WorldApi/';
 
-function callValues() {
-    $.ajax({
-        url: siteURL + 'WorldBuilder/_GetValues',
-        type: 'GET',
-        data: {
-            attr1: 5,
-            attr2: 6
-        },
-        datatype: 'json',
-        success: function (response) {
-            for (let i = 0; i < response.length; i++) {
-                alert(response[i]);
-            }
-        },
-        error: function (response) {
 
-        }
-    });
-}
+//   static variables   //
+var colorMaxNumber;
+var awaitingGetColorResult;
+
+//
 
 function postColor(r, g, b, a) {
     $.ajax({
@@ -41,10 +28,14 @@ function postColor(r, g, b, a) {
     });
 }
 
-function getColors() {
+function getColors(offset, ammount) {
     $.ajax({
         url: siteURL + 'ColorPalette/_GetColors',
         type: 'GET',
+        data: {
+            offset: offset,
+            ammount:ammount
+        },
         datatype: 'json',
         success: function (response) {
             if(response != null)
@@ -57,9 +48,24 @@ function getColors() {
                     + response[i].item4 + ','
                     + Number(response[i].item5) + ')"><div class="cross"><div></div><div></div></div></li>');
             }
+            awaitingGetColorResult = false;
         },
         error: function (response) {
+            awaitingGetColorResult = false;
+        }
+    });
+}
 
+function getColorNum() {
+    $.ajax({
+        url: siteURL + 'ColorPalette/_GetColorNumber',
+        type: 'GET',
+        datatype: 'json',
+        success: function (response) {
+            colorMaxNumber = response;
+        },
+        error: function (response) {
+            colorMaxNumber = 0;
         }
     });
 }

@@ -13,8 +13,8 @@ namespace WorldStorage.Controllers
     [Route("WorldApi/Color")]
     public class ColorController : Controller
     {
-        [HttpPost]
-        public async Task<List<Tuple<string, byte, byte, byte, float>>> GetAsync(int start)
+        [HttpGet]
+        public async Task<List<Tuple<string, byte, byte, byte, float>>> GetAsync(int offset, int ammount)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
@@ -26,9 +26,10 @@ namespace WorldStorage.Controllers
                 byte r, g, b;
                 float a;
                 await connection.OpenAsync();
-                string query = "SELECT TOP 10 c.color_id, c.r, c.g, c.b, c.a FROM [Colors] as c WHERE ROWNUM > @start ORDER BY c.create_time;";
+                string query = "SELECT c.color_id, c.r, c.g, c.b, c.a FROM [Colors] as c ORDER BY c.create_time DESC OFFSET @offset ROWS FETCH NEXT @ammount ROWS ONLY;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
-                sqlCommand.Parameters.AddWithValue("@start", start);
+                sqlCommand.Parameters.AddWithValue("@offset", offset);
+                sqlCommand.Parameters.AddWithValue("@ammount", ammount);
                 SqlDataReader reader = sqlCommand.ExecuteReader();
                 while (reader.Read())
                 {
@@ -47,6 +48,34 @@ namespace WorldStorage.Controllers
             {
                 Console.WriteLine(e.Message);
                 return null;
+            }
+        }
+
+        [HttpGet]
+        public async Task<int> GetNumberAsync()
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                int res = 0;
+                await connection.OpenAsync();
+                string query = "SELECT COUNT(c.color_id) FROM [Colors] as c;";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                if (reader.Read())
+                {
+                    res = reader.GetInt32(0);
+                }
+                reader.Close();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
             }
         }
 

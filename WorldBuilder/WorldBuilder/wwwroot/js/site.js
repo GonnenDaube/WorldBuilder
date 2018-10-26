@@ -70,8 +70,20 @@ $(document).ready(function () {
 
     if (window.location.pathname.includes('/ColorPalette')) {
         //Color Palette Index
-        getColors();
+        getColors(0, 15);
+        getColorNum();
     }
+
+    $(document).on('mousewheel', '.server-color', function () {
+        if ($(this).scrollTop() + $(this).height() == $(this).prop('scrollHeight')) {
+            //if reached bottom of element, load more
+            if ($(this).find('.color').length < colorMaxNumber)
+                if (!awaitingGetColorResult) {
+                    awaitingGetColorResult = true;
+                    getColors($(this).find('.color').length, 15);
+                }
+        }
+    });
 });
 
 function updateView() {
