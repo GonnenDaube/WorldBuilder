@@ -22,6 +22,13 @@
     margin: 15px;
 }
 
+.sprite-header{
+    position:absolute;
+    top:51px;
+    background-color:var(--dark-color);
+    height:50px;
+}
+
 .handle {
     position: absolute;
     width: 20px;
@@ -374,6 +381,30 @@ aside{
 .dropzone.dragover, .dropzone:hover{
     opacity:0.75;
 }
+
+.server-image {
+    height: 85%;
+    overflow-y: scroll;
+}
+
+    .server-image .image {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: 25px;
+        cursor: pointer;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+        .server-image .image .cross {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {

@@ -21,11 +21,16 @@
         color: var(--dark-color);
     }
 
-    .btn-default.primary:focus{
+    .btn-default:focus{
         box-shadow:rgba(0,0,0,0.4) 2.5px 2.5px 10px;
     }
 
     .btn-default.primary:active {
         color: var(--light-color);
         background-color: var(--active-color);
+    }
+
+    .btn-default:not(.primary):active{
+        color:var(--active-color);
+        background-color:var(--dark-color);
     }

@@ -5,6 +5,10 @@ var layerIndex = window.location.pathname.includes('/WorldBuilder/Index') ? 0 : 
 let numHandles;
 let worldSize;
 
+function clamp(num, min, max) {
+    return num <= min ? min : num >= max ? max : num;
+}
+
 let layers = [
     {
         'x': [],
@@ -83,6 +87,28 @@ $(document).ready(function () {
                     getColors($(this).find('.color').length, 15);
                 }
         }
+    });
+
+    if (window.location.pathname.includes('/SpriteBuilder')) {
+        //Color Palette Index
+        getSprites(0, 15);
+        getSpriteNum();
+    }
+
+    $(document).on('mousewheel', '.server-image', function () {
+        if ($(this).scrollTop() + $(this).height() == $(this).prop('scrollHeight')) {
+            //if reached bottom of element, load more
+            if ($(this).find('.image').length < spriteMaxNumber)
+                if (!awaitingGetSpriteResult) {
+                    awaitingGetSpriteResult = true;
+                    getSprites($(this).find('.image').length, 15);
+                }
+        }
+    });
+
+    $(document).on('click', '.server-image .image', function () {
+        let id = $(this).attr('data-image-id');
+        deleteSprite(id);
     });
 });
 

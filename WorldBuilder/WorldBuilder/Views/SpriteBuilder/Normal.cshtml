@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewData["Title"] = "Normal Map Builder";
+}
+
+@Html.Partial("_SpriteHeader")
+
+<content class="col-lg-12 col-md-12 col-sm-12 margin-top-30 horizontal-center" style="height:750px;">
+    <div class="fileUploader col-lg-5 col-md-5 margin-top-100">
+        <section>
+            <div class="dropzone col-lg-12 col-md-12 col-sm-12 horizontal-center margin-top-30" style="height:350px">
+                <label class="col-lg-12 col-md-12 horizontal-center text-center margin-top-150 font-24">Drop Files Here...</label>
+            </div>
+            <div class="finalzone col-lg-12 col-md-12 horizontal-center margin-top-30" style="height:700px; display:none;">
+                <img class="col-lg-12 col-md-12 upload-image margin-top-100 horizontal-center" src="" />
+            </div>
+            <input class="hidden" data-target="file-uploader" type="file" />
+        </section>
+    </div>
+    <div class="col-lg-2 col-md-2">
+        <i class="fas fa-arrow-right font-50 margin-top-300 horizontal-center pos-absolute"></i>
+    </div>
+    <div class="col-lg-5 col-md-5 margin-top-100">
+        <div class="col-lg-12 col-md-12 horizontal-center margin-top-30" style="height:700px;">
+            <img class="film-grain col-lg-12 col-md-12 upload-image margin-top-100 horizontal-center" src="" />
+        </div>
+    </div>
+</content>
+
+<aside>
+    <div data-target="images" class="server-image col-lg-12 col-md-12 margin-top-100 horizontal-center">
+    </div>
+</aside>
