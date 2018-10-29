@@ -5,13 +5,13 @@
 
 @Html.Partial("_SpriteHeader")
 
-<content class="col-lg-12 col-md-12 col-sm-12 margin-top-30 horizontal-center" style="height:750px;">
+<content class="col-lg-12 col-md-12 col-sm-12 margin-top-30 horizontal-center" style="height:700px;">
     <div class="fileUploader col-lg-5 col-md-5 margin-top-100">
         <section>
             <div class="dropzone col-lg-12 col-md-12 col-sm-12 horizontal-center margin-top-30" style="height:350px">
                 <label class="col-lg-12 col-md-12 horizontal-center text-center margin-top-150 font-24">Drop Files Here...</label>
             </div>
-            <div class="finalzone col-lg-12 col-md-12 horizontal-center margin-top-30" style="height:700px; display:none;">
+            <div class="finalzone col-lg-12 col-md-12 horizontal-center margin-top-30" style="height:550px; display:none;">
                 <img class="col-lg-12 col-md-12 upload-image margin-top-100 horizontal-center" src="" />
             </div>
             <input class="hidden" data-target="file-uploader" type="file" />
@@ -21,13 +21,23 @@
         <i class="fas fa-arrow-right font-50 margin-top-300 horizontal-center pos-absolute"></i>
     </div>
     <div class="col-lg-5 col-md-5 margin-top-100">
-        <div class="col-lg-12 col-md-12 horizontal-center margin-top-30" style="height:700px;">
+        <div class="col-lg-12 col-md-12 horizontal-center margin-top-30" style="height:550px;">
             <img class="film-grain col-lg-12 col-md-12 upload-image margin-top-100 horizontal-center" src="" />
         </div>
     </div>
+    <section class="col-lg-12 col-md-12 height-50">
+        <div id="submit-normal" class="pos-absolute horizontal-center" style="display:none">
+            <button type="button" class="btn-default dark margin-right-30" data-toggle="modal" data-target="#selectSpriteModal">Select Sprite</button>
+            <button class="btn-default primary margin-right-30" disabled data-target="submit-normal">Upload</button>
+            <button class="btn-default dark" data-target="dismiss-normal">Dismiss</button>
+            <input type="hidden" id="selected-sprite" />
+        </div>
+    </section>
 </content>
 
 <aside>
     <div data-target="images" class="server-image col-lg-12 col-md-12 margin-top-100 horizontal-center">
     </div>
 </aside>
+
+@Html.Partial("_SelectSpriteModal")

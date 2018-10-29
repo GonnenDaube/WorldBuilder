@@ -74,7 +74,7 @@ $(document).ready(function () {
 
     if (window.location.pathname.includes('/ColorPalette')) {
         //Color Palette Index
-        getColors(0, 15);
+        getColors(0, 15, loadColorsToAside);
         getColorNum();
     }
 
@@ -84,14 +84,14 @@ $(document).ready(function () {
             if ($(this).find('.color').length < colorMaxNumber)
                 if (!awaitingGetColorResult) {
                     awaitingGetColorResult = true;
-                    getColors($(this).find('.color').length, 15);
+                    getColors($(this).find('.color').length, 15, loadColorsToAside);
                 }
         }
     });
 
     if (window.location.pathname.includes('/SpriteBuilder')) {
         //Color Palette Index
-        getSprites(0, 15);
+        getSprites(0, 10, loadSpritesToAside);
         getSpriteNum();
     }
 
@@ -101,7 +101,7 @@ $(document).ready(function () {
             if ($(this).find('.image').length < spriteMaxNumber)
                 if (!awaitingGetSpriteResult) {
                     awaitingGetSpriteResult = true;
-                    getSprites($(this).find('.image').length, 15);
+                    getSprites($(this).find('.image').length, 10, loadSpritesToAside);
                 }
         }
     });
@@ -111,6 +111,10 @@ $(document).ready(function () {
         deleteSprite(id);
     });
 });
+
+function reloadPage() {
+    window.location = window.location;
+}
 
 function updateView() {
     positionHandles(layerIndex);

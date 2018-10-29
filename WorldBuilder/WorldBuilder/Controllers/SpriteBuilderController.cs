@@ -35,10 +35,17 @@ namespace WorldBuilder.Controllers
             return Json(res);
         }
 
+        [HttpPut]
+        public async Task<ActionResult> _SetSpriteNormal(string sprite, string normal)
+        {
+            int res = await new SpriteController().SetSpriteNormalAsync(sprite, normal);
+            return Json(res);
+        }
+
         [HttpPost]
         public async Task<ActionResult> _PostSprite(string file, string name)
         {
-            int res = await new SpriteController().PostAsync(file, name);
+            string res = await new SpriteController().PostAsync(file, name);
             return Json(res);
         }
 

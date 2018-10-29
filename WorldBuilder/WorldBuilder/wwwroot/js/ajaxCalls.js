@@ -29,7 +29,7 @@ function postColor(r, g, b, a) {
     });
 }
 
-function getColors(offset, ammount) {
+function getColors(offset, ammount, onsuccess) {
     $.ajax({
         url: siteURL + 'ColorPalette/_GetColors',
         type: 'GET',
@@ -39,17 +39,8 @@ function getColors(offset, ammount) {
         },
         datatype: 'json',
         success: function (response) {
-            if(response != null)
-            for (let i = 0; i < response.length; i++) {
-                $('div[data-target="colors"]').append(
-                    '<div class="color" data-color-id="'
-                    + response[i].item1 + '" style="background-color:rgba('
-                    + response[i].item2 + ','
-                    + response[i].item3 + ','
-                    + response[i].item4 + ','
-                    + Number(response[i].item5) + ')"><div class="cross"><div></div><div></div></div></li>');
-            }
             awaitingGetColorResult = false;
+            onsuccess(response);
         },
         error: function (response) {
             awaitingGetColorResult = false;
@@ -89,7 +80,7 @@ function deleteColor(id) {
     });
 }
 
-function postImage(file, name) {
+function postImage(file, name, onsuccess) {
     $.ajax({
         url: siteURL + 'SpriteBuilder/_PostSprite',
         type: 'POST',
@@ -99,8 +90,9 @@ function postImage(file, name) {
         },
         datatype: 'json',
         success: function (response) {
-            if (response)
-                window.location = window.location;
+            if (response) {
+                onsuccess(response);
+            }
         },
         error: function (response) {
 
@@ -108,7 +100,27 @@ function postImage(file, name) {
     });
 }
 
-function getSprites(offset, ammount) {
+function setSpriteNormalMap(spriteId, normalId, onsuccess) {
+    $.ajax({
+        url: siteURL + 'SpriteBuilder/_SetSpriteNormal',
+        type: 'PUT',
+        data: {
+            sprite: spriteId,
+            normal: normalId
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                onsuccess(response);
+            }
+        },
+        error: function (response) {
+
+        }
+    });
+}
+
+function getSprites(offset, ammount, onsuccess) {
     $.ajax({
         url: siteURL + 'SpriteBuilder/_GetSprites',
         type: 'GET',
@@ -118,20 +130,8 @@ function getSprites(offset, ammount) {
         },
         datatype: 'json',
         success: function (response) {
-            if (response != null)
-                for (let i = 0; i < response.length; i++) {
-                    let b = BsToBlob(response[i].item2);
-                    let reader = new FileReader();
-                    reader.onload = function () {
-                        $('div[data-target="images"]').append(
-                            '<div class="image" data-image-id="'
-                            + response[i].item1 + '" style="background-image:url('
-                            + this.result + ')" data-image-name="'
-                            + response[i].item3 + '"><div class="cross"><div></div><div></div></div></li>');
-                    };
-                    reader.readAsDataURL(b);
-                }
             awaitingGetSpriteResult = false;
+            onsuccess(response);
         },
         error: function (response) {
             awaitingGetSpriteResult = false;

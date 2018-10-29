@@ -6,15 +6,20 @@
     height:35px;
 }
 
+.btn-default[disabled]{
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
 .btn-default.primary{
     background-color:var(--active-color);
     color:var(--dark-color);
 }
 
-.btn-default.dark{
-    background-color:var(--dark-color);
-    color:var(--light-color);
-}
+    .btn-default.dark{
+        background-color:var(--dark-color);
+        color:var(--light-color);
+    }
 
     .btn-default.light {
         background-color: var(--light-color);
@@ -33,4 +38,28 @@
     .btn-default:not(.primary):active{
         color:var(--active-color);
         background-color:var(--dark-color);
+    }
+
+.scroll-y{
+    overflow-x:hidden;
+    overflow-y:scroll;
+}
+
+.grid-4{
+    font-size:0;
+}
+
+    .grid-4 .grid-item {
+        width: 20%;
+        margin-right:2.5%;
+        margin-left:2.5%;
+        padding-top:20%;
+        height:0;
+        left:0;
+        transform:initial;
+        display: inline-block;
+    }
+
+    .grid-item.image.selected{
+        border:solid 1px var(--active-color);
     }
