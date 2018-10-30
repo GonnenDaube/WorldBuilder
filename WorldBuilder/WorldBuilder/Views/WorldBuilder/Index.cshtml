@@ -18,11 +18,21 @@
     <div class="scroll-handle"></div>
 </div>
 
-<aside>
+<aside style="z-index:100">
     <div class="slider col-md-10 col-lg-10 margin-top-100 horizontal-center">
         <div class="bar"></div>
         <div class="handle" style="left:0%"></div>
         <input type="range" min="0" max="4" class="hidden"/>
+    </div>
+    <div class="layer-color col-md-12 col-lg-12 margin-top-30 horizontal-center">
+        <div class="color pos-absolute horizontal-center">
+        </div>
+    </div>
+</aside>
+
+<aside id="color-selector" class="closed small" style="z-index:99;">
+    <div data-target="colors" class="server-color col-lg-12 col-md-12 margin-top-100 horizontal-center">
+
     </div>
 </aside>
 

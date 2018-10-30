@@ -13,27 +13,37 @@ let layers = [
     {
         'x': [],
         'y': [],
-        'size': undefined
+        'size': undefined,
+        'color': [255, 255, 255, 1],
+        'color_id': undefined
     },
     {
         'x': [],
         'y': [],
-        'size': undefined
+        'size': undefined,
+        'color': [200, 200, 200, 1],
+        'color_id': undefined
     },
     {
         'x': [],
         'y': [],
-        'size': undefined
+        'size': undefined,
+        'color': [150, 150, 150, 1],
+        'color_id': undefined
     },
     {
         'x': [],
         'y': [],
-        'size': undefined
+        'size': undefined,
+        'color': [100, 100, 100, 1],
+        'color_id': undefined
     },
     {
         'x': [],
         'y': [],
-        'size': undefined
+        'size': undefined,
+        'color': [50, 50, 50, 1],
+        'color_id': undefined
     }
 ];
 
@@ -72,8 +82,9 @@ $(document).ready(function () {
         $('.slider .handle').attr('style', 'left:0%');
     })
 
-    if (window.location.pathname.includes('/ColorPalette')) {
-        //Color Palette Index
+    if (window.location.pathname.includes('/ColorPalette') ||
+        window.location.pathname.includes('/WorldBuilder')) {
+        //Color Palette Index || World Builder Index
         getColors(0, 15, loadColorsToAside);
         getColorNum();
     }
@@ -110,6 +121,17 @@ $(document).ready(function () {
         let id = $(this).attr('data-image-id');
         deleteSprite(id);
     });
+
+    $(document).on('click', '.layer-color .color', function () {
+        if ($('#color-selector').hasClass("closed")) {
+            $('#color-selector').removeClass('closed');
+            $('#color-selector').addClass('open');
+        }
+        else {
+            $('#color-selector').removeClass('open');
+            $('#color-selector').addClass('closed');
+        }
+    });
 });
 
 function reloadPage() {
@@ -124,8 +146,13 @@ function updateView() {
         finalPX = curved.x;
         finalPY = curved.y;
         let polygon = convertToPolygon(finalPX, finalPY);
-        $('#layer' + i).attr('style', 'clip-path: ' + polygon);
+        let color = layers[i].color;
+        $('#layer' + i).attr('style', 'clip-path: ' + polygon + '; background-color:rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + color[3] + ')');
     }
+
+    let color = layers[layerIndex].color;
+    $('.layer-color .color').attr('style', 'background-color:rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + color[3] + ')');
+    $('.layer-color .color').attr('data-color-id', layers[layerIndex].color_id);
 }
 
 function updateLayer(target) {
@@ -209,7 +236,8 @@ function updatePointsArray(index, x, y) {
         finalPX = curved.x;
         finalPY = curved.y;
         let polygon = convertToPolygon(finalPX, finalPY);
-        $('#layer' + layerIndex).attr('style', 'clip-path: ' + polygon);
+        let color = layers[layerIndex].color;
+        $('#layer' + layerIndex).attr('style', 'clip-path: ' + polygon + '; background-color:rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + color[3] + ')');
     }
 }
 

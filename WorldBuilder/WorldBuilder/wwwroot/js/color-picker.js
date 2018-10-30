@@ -92,9 +92,27 @@
         postColor(r, g, b, a);
     });
 
-    $(document).on('click', '.server-color .color', function () {
+    $(document).on('click', '.server-color[data-remove] .color', function () {
         let id = $(this).attr('data-color-id');
         deleteColor(id);
+    });
+
+    $(document).on('click', '.server-color:not([data-remove]) .color', function () {
+        $('#color-selector').removeClass('open');
+        $('#color-selector').addClass('closed');
+        let color = [];
+        let style = $(this).attr('style');
+        style = style.substring(style.indexOf('background-color:rgba(') + 'background-color:rgba('.length);
+        color[0] = Number(style.substring(0, style.indexOf(',')));
+        style = style.substring(style.indexOf(',') + 1);
+        color[1] = Number(style.substring(0, style.indexOf(',')));
+        style = style.substring(style.indexOf(',') + 1);
+        color[2] = Number(style.substring(0, style.indexOf(',')));
+        style = style.substring(style.indexOf(',') + 1);
+        color[3] = Number(style.substring(0, style.indexOf(')')));
+        layers[layerIndex].color = color;
+        layers[layerIndex].color_id = $(this).attr('data-color-id');
+        updateView();
     });
 });
 
@@ -144,7 +162,11 @@ function updateFinalColor() {
 }
 
 function loadColorsToAside(response) {
-    if (response != null)
+    if (response != null) {
+        let isDelete = false;
+        if (window.location.pathname.includes('/ColorPalette')) {
+            isDelete = true;
+        }
         for (let i = 0; i < response.length; i++) {
             $('div[data-target="colors"]').append(
                 '<div class="color" data-color-id="'
@@ -152,6 +174,7 @@ function loadColorsToAside(response) {
                 + response[i].item2 + ','
                 + response[i].item3 + ','
                 + response[i].item4 + ','
-                + Number(response[i].item5) + ')"><div class="cross"><div></div><div></div></div></li>');
+                + Number(response[i].item5) + ')">' + (isDelete ? '<div class="cross"><div></div><div></div></div>' : '') + '</li>');
         }
+    }
 }
