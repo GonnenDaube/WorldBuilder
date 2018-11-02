@@ -201,14 +201,19 @@ function getColorIndicesForCoord(x, y, width) {
 }
 
 function loadSpritesToAside(response) {
-    if (response != null)
+    if (response != null) {
+        let isDelete = false;
+        if (window.location.pathname.includes('/SpriteBuilder')) {
+            isDelete = true;
+        }
         for (let i = 0; i < response.length; i++) {
             $('div[data-target="images"]').append(
                 '<div class="image" data-image-id="'
                 + response[i].item1 + '" style="background-image:url('
                 + response[i].item2 + ')" data-image-name="'
-                + response[i].item3 + '"><div class="cross"><div></div><div></div></div>');
+                + response[i].item3 + '">' + (isDelete ? '<div class="cross"><div></div><div></div></div>' : '') + '</div>');
         }
+    }
 }
 
 function loadSpritesToModalGrid(response) {

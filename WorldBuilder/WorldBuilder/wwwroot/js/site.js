@@ -5,6 +5,8 @@ var layerIndex = window.location.pathname.includes('/WorldBuilder/Index') ? 0 : 
 let numHandles;
 let worldSize;
 
+var sprite_id = undefined;
+
 function clamp(num, min, max) {
     return num <= min ? min : num >= max ? max : num;
 }
@@ -100,8 +102,9 @@ $(document).ready(function () {
         }
     });
 
-    if (window.location.pathname.includes('/SpriteBuilder')) {
-        //Color Palette Index
+    if (window.location.pathname.includes('/SpriteBuilder') ||
+        window.location.pathname.includes('/WorldBuilder')) {
+        //Sprite Builder Index || World Builder Index
         getSprites(0, 10, loadSpritesToAside);
         getSpriteNum();
     }
@@ -117,7 +120,7 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('click', '.server-image .image', function () {
+    $(document).on('click', '.server-image[data-remove] .image', function () {
         let id = $(this).attr('data-image-id');
         deleteSprite(id);
     });
@@ -126,11 +129,35 @@ $(document).ready(function () {
         if ($('#color-selector').hasClass("closed")) {
             $('#color-selector').removeClass('closed');
             $('#color-selector').addClass('open');
+
+            $('[data-role="sidebar"]:not(#color-selector)').removeClass('open');
+            $('[data-role="sidebar"]:not(#color-selector)').addClass('closed');
+            $('.sprite-info-selector i').removeClass('active');
         }
         else {
-            $('#color-selector').removeClass('open');
-            $('#color-selector').addClass('closed');
+            $('[data-role="sidebar"]').removeClass('open');
+            $('[data-role="sidebar"]').addClass('closed');
         }
+    });
+
+    $(document).on('click', '.sprite-info-selector i', function () {
+        if ($('#sprite-selector').hasClass("closed")) {
+            $(this).addClass('active');
+            $('#sprite-selector').removeClass('closed');
+            $('#sprite-selector').addClass('open');
+
+            $('[data-role="sidebar"]:not(#sprite-selector)').removeClass('open');
+            $('[data-role="sidebar"]:not(#sprite-selector)').addClass('closed');
+        }
+        else {
+            $(this).removeClass('active');
+            $('[data-role="sidebar"]').removeClass('open');
+            $('[data-role="sidebar"]').addClass('closed');
+        }
+    });
+
+    $(document).on('mousedown', '#sprite-selector .image', function () {
+        
     });
 });
 

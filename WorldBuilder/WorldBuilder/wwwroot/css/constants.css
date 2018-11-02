@@ -16,6 +16,22 @@ a:focus, button:focus {
     outline: none;
 }
 
+.light {
+    color: var(--light-color);
+}
+
+.dark {
+    color: var(--dark-color);
+}
+
+.active {
+    color: var(--active-color);
+}
+
+.margin-top-10 {
+    margin-top: 10px;
+}
+
 .margin-top-30 {
     margin-top: 30px;
 }

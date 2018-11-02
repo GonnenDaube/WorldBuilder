@@ -174,7 +174,7 @@ function loadColorsToAside(response) {
                 + response[i].item2 + ','
                 + response[i].item3 + ','
                 + response[i].item4 + ','
-                + Number(response[i].item5) + ')">' + (isDelete ? '<div class="cross"><div></div><div></div></div>' : '') + '</li>');
+                + Number(response[i].item5) + ')">' + (isDelete ? '<div class="cross"><div></div><div></div></div>' : '') + '</div>');
         }
     }
 }

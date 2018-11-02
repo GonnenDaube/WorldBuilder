@@ -40,6 +40,10 @@
         background-color:var(--dark-color);
     }
 
+.pointer{
+    cursor:pointer;
+}
+
 .scroll-y{
     overflow-x:hidden;
     overflow-y:scroll;
