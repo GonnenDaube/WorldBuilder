@@ -49,6 +49,10 @@
     overflow-y:scroll;
 }
 
+.image{
+    user-select:none;
+}
+
 .grid-4{
     font-size:0;
 }

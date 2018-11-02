@@ -2,29 +2,31 @@
 
 $(document).ready(function () {
 
-    $(document).on('drag', function (e) {
-        dragTimer = window.setTimeout(function () {
-            //drag file leave
-            $('.dropzone').removeClass('dragover');
-        }, 25);
+    if (window.location.pathname.includes('/SpriteBuilder')) {
+        $(document).on('drag', function (e) {
+            dragTimer = window.setTimeout(function () {
+                //drag file leave
+                $('.dropzone').removeClass('dragover');
+            }, 25);
 
-        $(this).parent().closest('.fileUploader').find('input[type="file"]').files = e.dataTransfer.files;
-    });
+            $(this).parent().closest('.fileUploader').find('input[type="file"]').files = e.dataTransfer.files;
+        });
 
-    $(document).on('dragover', function (e) {
-        var dt = e.originalEvent.dataTransfer;
-        if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
-            //drag file enter
-            $('.dropzone').addClass('dragover');
-        }
-    });
+        $(document).on('dragover', function (e) {
+            var dt = e.originalEvent.dataTransfer;
+            if (dt.types && (dt.types.indexOf ? dt.types.indexOf('Files') != -1 : dt.types.contains('Files'))) {
+                //drag file enter
+                $('.dropzone').addClass('dragover');
+            }
+        });
 
-    $(document).on('dragleave', function (e) {
-        dragTimer = window.setTimeout(function () {
-            //drag file leave
-            $('.dropzone').removeClass('dragover');
-        }, 25);
-    });
+        $(document).on('dragleave', function (e) {
+            dragTimer = window.setTimeout(function () {
+                //drag file leave
+                $('.dropzone').removeClass('dragover');
+            }, 25);
+        });
+    }
 
     $(document).on('click', '.fileUploader .dropzone', function () {
         $(this).parent().closest('.fileUploader').find('input[type="file"]').trigger('click');
@@ -208,7 +210,7 @@ function loadSpritesToAside(response) {
         }
         for (let i = 0; i < response.length; i++) {
             $('div[data-target="images"]').append(
-                '<div class="image" data-image-id="'
+                '<div class="image" draggable="false" data-image-id="'
                 + response[i].item1 + '" style="background-image:url('
                 + response[i].item2 + ')" data-image-name="'
                 + response[i].item3 + '">' + (isDelete ? '<div class="cross"><div></div><div></div></div>' : '') + '</div>');

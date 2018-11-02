@@ -29,6 +29,11 @@
     height:50px;
 }
 
+.layer img{
+    cursor:pointer;
+    pointer-events:all;
+}
+
 .handle {
     position: absolute;
     width: 20px;
@@ -40,6 +45,15 @@
     transition: opacity ease-in-out 0.1s;
     cursor: pointer;
     user-select: none;
+    pointer-events:all;
+}
+
+#handles{
+    pointer-events:none;
+}
+
+.layer{
+    pointer-events:none;
 }
 
 .handle:hover{

@@ -9,7 +9,7 @@
 }
 
 .pos-absolute{
-    position:absolute;
+    position:absolute !important;
 }
 
 a:focus, button:focus {
@@ -144,6 +144,10 @@ section {
         left: 50%;
         transform: translateX(-50%) translateY(-50%);
     }
+
+.center {
+    transform: translateX(-50%) translateY(-50%) !important;
+}
 
 .full-size {
     position: absolute;

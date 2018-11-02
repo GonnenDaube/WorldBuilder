@@ -7,6 +7,8 @@ let worldSize;
 
 var sprite_id = undefined;
 
+var movingImg = undefined;
+
 function clamp(num, min, max) {
     return num <= min ? min : num >= max ? max : num;
 }
@@ -17,35 +19,40 @@ let layers = [
         'y': [],
         'size': undefined,
         'color': [255, 255, 255, 1],
-        'color_id': undefined
+        'color_id': undefined,
+        'sprites': []
     },
     {
         'x': [],
         'y': [],
         'size': undefined,
         'color': [200, 200, 200, 1],
-        'color_id': undefined
+        'color_id': undefined,
+        'sprites': []
     },
     {
         'x': [],
         'y': [],
         'size': undefined,
         'color': [150, 150, 150, 1],
-        'color_id': undefined
+        'color_id': undefined,
+        'sprites': []
     },
     {
         'x': [],
         'y': [],
         'size': undefined,
         'color': [100, 100, 100, 1],
-        'color_id': undefined
+        'color_id': undefined,
+        'sprites': []
     },
     {
         'x': [],
         'y': [],
         'size': undefined,
         'color': [50, 50, 50, 1],
-        'color_id': undefined
+        'color_id': undefined,
+        'sprites': []
     }
 ];
 
@@ -156,16 +163,83 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('mousedown', '#sprite-selector .image', function () {
-        
+    $(document).on('mousedown', '#sprite-selector .image', function (event) {
+        let image = $(this).attr('style');
+        sprite_id = $(this).attr('data-image-id');
+        image = image.substring(image.indexOf('url(') + 'url('.length, image.indexOf(')'));
+        $('body').append('<div data-role="drag-surface" class="full-size" style="z-index:999"></div>');
+        $('div[data-role="drag-surface"]').append('<img draggable="false" class="center image pos-absolute" src="'
+            + image + '" style="left: ' + event.clientX + 'px; top: ' + event.clientY + 'px;"/>');
+    });
+
+    $(document).on('mousemove', 'div[data-role="drag-surface"]', function (event) {
+        $(this).find('img').attr('style', 'left: ' + event.clientX + 'px; top: ' + event.clientY + 'px;');
+    });
+
+    $(document).on('mouseup', 'div[data-role="drag-surface"]', function (event) {
+        let image = $(this).find('img');
+        let s = image.attr('style');
+        let posX = Number(s.substring(s.indexOf('left: ') + 'left: '.length, s.indexOf('px')));
+        let posY = Number(s.substring(s.indexOf('top: ') + 'top: '.length, s.lastIndexOf('px')));
+        let zoneX = $('#background').offset().left;
+        let zoneY = $('#background').offset().top;
+        let width = $('#background').width();
+        let height = $('#background').height();
+
+        let scroll_left = getScrollLeft();
+
+        if ((posX > zoneX && posX < zoneX + width) &&
+            (posY > zoneY && posY < zoneY + height)) {
+            //in range
+            let sprite = {
+                id: sprite_id,
+                x: 100 * (posX - zoneX) / width + (layers[layerIndex].size - 100) * scroll_left / 100,
+                y: 100 * (posY - zoneY) / height,
+                size: 10
+            };
+            layers[layerIndex].sprites.push(sprite);
+            $('.layer' + layerIndex + ':not(.handle)').append('<img draggable="false" class="center image pos-absolute" src="' + image.attr('src')
+                + '" style="left: ' + sprite.x + '%; top: ' + sprite.y
+                + '%; width: ' + sprite.size + '%; height: auto"/>');
+        }
+        $(this).remove();
+        sprite_id = undefined;
+    });
+
+    $(document).on('mousedown', '.layer img', function () {
+        movingImg = $(this).index() - 1;
+    });
+
+    $(document).on('mousemove', 'body', function (e) {
+        if (movingImg != undefined) {
+            moveImage(e);
+        }
+    });
+
+    $(document).on('mouseup', 'body', function () {
+        movingImg = undefined;
     });
 });
+
+function moveImage(e) {
+    let left = getScrollLeft();
+    let offset = (layers[layerIndex].size - 100) * left / 100;
+    let posX = e.clientX - $('#background').offset().left;
+    let posY = e.clientY - $('#background').offset().top;
+    posX *= 100 / $('#background').width();
+    posY *= 100 / $('#background').height();
+    posX -= offset;
+    layers[layerIndex].sprites[movingImg].x = posX;
+    layers[layerIndex].sprites[movingImg].y = posY;
+    updateSprite(layers[layerIndex].sprites[movingImg], $($('.layer.layer' + layerIndex + ' img')[movingImg]), offset);
+}
 
 function reloadPage() {
     window.location = window.location;
 }
 
 function updateView() {
+    let left = getScrollLeft();
     positionHandles(layerIndex);
     $('.handle:not(.layer' + layerIndex + '):not(.slider .handle)').hide();
     for (let i = 0; i < layers.length; i++) {
@@ -175,11 +249,25 @@ function updateView() {
         let polygon = convertToPolygon(finalPX, finalPY);
         let color = layers[i].color;
         $('#layer' + i).attr('style', 'clip-path: ' + polygon + '; background-color:rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + color[3] + ')');
+        
+        let offset = (layers[i].size - 100) * left / 100;
+
+        for (let j = 0; j < layers[i].sprites.length; j++) {
+            let selector = '.layer.layer' + i + ' img';
+            let sprite = $($(selector)[j]);
+            updateSprite(layers[i].sprites[j], sprite, offset);
+        }
     }
 
     let color = layers[layerIndex].color;
     $('.layer-color .color').attr('style', 'background-color:rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + color[3] + ')');
     $('.layer-color .color').attr('data-color-id', layers[layerIndex].color_id);
+}
+
+function updateSprite(spriteObject, spriteElement, offset) {
+    spriteElement.attr('style', 'left: '
+        + (spriteObject.x - offset) + '%; top: '
+        + spriteObject.y + '%; width: ' + spriteObject.size + '%; height: auto');
 }
 
 function updateLayer(target) {
@@ -251,12 +339,17 @@ function moveHandleEvent(event, index) {
     }
 }
 
+function getScrollLeft() {
+    let style = $('.scroll-handle').attr('style');
+    let width = Number(style.substring(style.indexOf('width:') + 'width:'.length, style.lastIndexOf('%')));
+    let left = Number(style.substring(style.indexOf('left:') + 'left:'.length, style.indexOf('%'))) - width / 2;
+    left = 100 * left / (100 - width);
+    return left;
+}
+
 function updatePointsArray(index, x, y) {
     if (layerIndex != -1) {
-        let style = $('.scroll-handle').attr('style');
-        let width = Number(style.substring(style.indexOf('width:') + 'width:'.length, style.lastIndexOf('%')));
-        let left = Number(style.substring(style.indexOf('left:') + 'left:'.length, style.indexOf('%'))) - width / 2;
-        left = 100 * left / (100 - width);
+        let left = getScrollLeft();
         layers[layerIndex].x[index + 1] = x + (layers[layerIndex].size - 100) * left / 100;
         layers[layerIndex].y[index + 1] = y;
         let curved = cruveLines(layers[layerIndex]);
@@ -278,27 +371,25 @@ function convertToPolygon(pX, pY) {
 }
 
 function cruveLines(p) {
-    let style = $('.scroll-handle').attr('style');
-    let width = Number(style.substring(style.indexOf('width:') + 'width:'.length, style.lastIndexOf('%')));
-    let left = Number(style.substring(style.indexOf('left:') + 'left:'.length, style.indexOf('%'))) - width / 2;
-    left = 100 * left / (100 - width);
+    let left = getScrollLeft();
     let pX = p.x;
     let pY = p.y;
     let x = [];
-    x.push(pX[0] - (p.size - 100) * left / 100);
-    x.push(pX[1] - (p.size - 100) * left / 100);
+    let offset = (p.size - 100) * left / 100;
+    x.push(pX[0] - offset);
+    x.push(pX[1] - offset);
     let y = [];
     y.push(pY[0]);
     y.push(pY[1]);
     let segment;
     
     for (let i = 1; i < pX.length - 3; i += 2) {
-        segment = getCurveSegment(pX[i] - (p.size - 100) * left / 100, pX[i + 1] - (p.size - 100) * left / 100, pX[i + 2] - (p.size - 100) * left / 100, pY[i], pY[i + 1], pY[i + 2]);
+        segment = getCurveSegment(pX[i] - offset, pX[i + 1] - offset, pX[i + 2] - offset, pY[i], pY[i + 1], pY[i + 2]);
         x = x.concat(segment.x);
         y = y.concat(segment.y);
     }
 
-    x.push(pX[pX.length - 1] - (p.size - 100) * left / 100);
+    x.push(pX[pX.length - 1] - offset);
     y.push(pY[pY.length - 1]);
     return { 'x': x, 'y': y };
 }
