@@ -1,7 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 *{
@@ -26,6 +26,14 @@ a:focus, button:focus {
 
 .active {
     color: var(--active-color);
+}
+
+.active-color {
+    background-color: var(--active-color);
+}
+
+.pivot-center{
+    transform:translateX(-50%) translateY(-50%);
 }
 
 .margin-top-10 {

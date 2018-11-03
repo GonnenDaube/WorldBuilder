@@ -71,3 +71,44 @@
     .grid-item.image.selected{
         border:solid 1px var(--active-color);
     }
+
+.sprite-editor {
+    position: absolute;
+    transform: translateX(-50%) translateY(-50%);
+    border: 1px dashed var(--trans-active-color);
+}
+
+.circle-10{
+    width:10px;
+    height:10px;
+    border-radius:5px;
+}
+
+.bottom-left {
+    position: absolute;
+    top: 100%;
+    left: 0;
+}
+
+.bottom-right{
+    position:absolute;
+    top:100%;
+    left:100%;
+}
+
+.top-left {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.top-right {
+    position: absolute;
+    top: 0;
+    left: 100%;
+}
+
+.sprite-handle{
+    cursor:pointer;
+    pointer-events:all;
+}

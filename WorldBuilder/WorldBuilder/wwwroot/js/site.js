@@ -8,6 +8,10 @@ let worldSize;
 var sprite_id = undefined;
 
 var movingImg = undefined;
+var start = undefined;
+
+var editedImg = undefined;
+var editSize = false;
 
 function clamp(num, min, max) {
     return num <= min ? min : num >= max ? max : num;
@@ -52,6 +56,14 @@ let layers = [
         'size': undefined,
         'color': [50, 50, 50, 1],
         'color_id': undefined,
+        'sprites': []
+    },
+    {
+        'x': [],
+        'y': [],
+        'size': undefined,
+        'color': [0, 0, 0, 1],
+        'color-id': undefined,
         'sprites': []
     }
 ];
@@ -187,27 +199,40 @@ $(document).ready(function () {
         let height = $('#background').height();
 
         let scroll_left = getScrollLeft();
+        let offset = (layers[layerIndex].size - 100) * scroll_left / 100;
 
         if ((posX > zoneX && posX < zoneX + width) &&
             (posY > zoneY && posY < zoneY + height)) {
             //in range
             let sprite = {
                 id: sprite_id,
-                x: 100 * (posX - zoneX) / width + (layers[layerIndex].size - 100) * scroll_left / 100,
+                x: 100 * (posX - zoneX) / width + offset,
                 y: 100 * (posY - zoneY) / height,
                 size: 10
             };
             layers[layerIndex].sprites.push(sprite);
             $('.layer' + layerIndex + ':not(.handle)').append('<img draggable="false" class="center image pos-absolute" src="' + image.attr('src')
-                + '" style="left: ' + sprite.x + '%; top: ' + sprite.y
+                + '" style="left: ' + (sprite.x - offset) + '%; top: ' + sprite.y
                 + '%; width: ' + sprite.size + '%; height: auto"/>');
         }
         $(this).remove();
         sprite_id = undefined;
     });
 
-    $(document).on('mousedown', '.layer img', function () {
-        movingImg = $(this).index() - 1;
+    $(document).on('mousedown', '.layer img', function (e) {
+        if ($(this).parent().closest('.layer').hasClass('layer' + layerIndex)) {
+            movingImg = $(this).index() - 1;
+            let s = $(this).attr('style');
+            let left = layers[layerIndex].sprites[movingImg].x;
+            let top = layers[layerIndex].sprites[movingImg].y;
+            $('#sprite-editor-zone').find('*').remove();
+            start = {
+                x: e.clientX,
+                y: e.clientY,
+                ix: left,
+                iy: top
+            };
+        }
     });
 
     $(document).on('mousemove', 'body', function (e) {
@@ -218,19 +243,106 @@ $(document).ready(function () {
 
     $(document).on('mouseup', 'body', function () {
         movingImg = undefined;
+        start = undefined;
+    });
+
+    $(document).on('click', '.layer img', function (e) {
+        if ($(this).parent().closest('.layer').hasClass('layer' + layerIndex)){
+            let index = $(this).index() - 1;
+            let ratio = $(this)[0].naturalHeight / $(this)[0].naturalWidth;
+            let size = layers[layerIndex].sprites[index].size;
+            let width = size;
+            let height = size * ratio;
+            let left = getScrollLeft();
+            let offset = (layers[layerIndex].size - 100) * left / 100;
+            let x = layers[layerIndex].sprites[index].x - offset;
+            let y = layers[layerIndex].sprites[index].y;
+
+            let editor = '<div draggable="false" class="sprite-editor" style="left:' + x + '%; top:' + y + '%; width:' + width + '%; padding-top:' + height + '%">'
+                + '<div draggable="false" class="sprite-handle pos-absolute circle-10 active-color top-left pivot-center"></div>'
+                + '<div draggable="false" class="sprite-handle pos-absolute circle-10 active-color top-right pivot-center"></div>'
+                + '<div draggable="false" class="sprite-handle pos-absolute circle-10 active-color bottom-right pivot-center"></div>'
+                + '<div draggable="false" class="sprite-handle pos-absolute circle-10 active-color bottom-left pivot-center"></div>'
+                + '</div>';
+
+            $('#sprite-editor-zone').append(editor);
+            editedImg = index;
+            e.stopImmediatePropagation();
+        }
+    });
+
+    $(document).on('click', '*:not(.layer img):not(.sprite-editor div)', function () {
+        $('#sprite-editor-zone').find('*').remove();
+    });
+
+    $(document).on('mousedown', '.sprite-editor div', function () {
+        editSize = true;
+    });
+
+    $(document).on('mousemove', 'body', function (e) {
+        if (editSize) {
+            let editor = $('.sprite-editor');
+            let curX = e.clientX;
+            let curY = e.clientY;
+            let image = $($('.layer.layer' + layerIndex + ' img')[editedImg]);
+            let ratio = image[0].naturalHeight / image[0].naturalWidth;
+            let angle = toRadians(getRotationDegrees(editor));
+            let w = editor.outerWidth() / 2;
+            let h = editor.outerHeight() / 2;
+            let posX = editor.offset().left + Math.cos(angle) * w - Math.sin(angle) * h;
+            let posY = editor.offset().top + Math.cos(angle) * h + Math.sin(angle) * w;
+            let diffX = Math.abs(curX - posX);
+            let diffY = Math.abs(curY - posY);
+            let beta = (Math.atan2(diffX, diffY));
+            let left = getScrollLeft();
+            let offset = (layers[layerIndex].size - 100) * left / 100;
+            let size = 2 * Math.sin(angle + beta) * Math.sqrt(diffX * diffX + diffY * diffY);
+            size *= 100 / $('#background').width();
+            layers[layerIndex].sprites[editedImg].size = size;
+            updateSprite(layers[layerIndex].sprites[editedImg], $($('.layer.layer' + layerIndex + ' img')[editedImg]), offset);
+            let x = layers[layerIndex].sprites[editedImg].x - offset;
+            let y = layers[layerIndex].sprites[editedImg].y;
+            editor.attr('style', 'left: ' + x + '%; top:' + y + '%; width:' + size + '%; padding-top:' + size * ratio + '%');
+        }
+    });
+
+    $(document).on('mouseup', 'body', function () {
+        editSize = false;
     });
 });
+
+function toDegrees(angle) {
+    return angle * (180 / Math.PI);
+}
+
+function toRadians(angle) {
+    return angle * (Math.PI / 180);
+}
+
+function getRotationDegrees(obj) {
+    var matrix = obj.css("-webkit-transform") ||
+        obj.css("-moz-transform") ||
+        obj.css("-ms-transform") ||
+        obj.css("-o-transform") ||
+        obj.css("transform");
+    if (matrix !== 'none') {
+        var values = matrix.split('(')[1].split(')')[0].split(',');
+        var a = values[0];
+        var b = values[1];
+        var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+    } else { var angle = 0; }
+    return (angle < 0) ? angle + 360 : angle;
+}
 
 function moveImage(e) {
     let left = getScrollLeft();
     let offset = (layers[layerIndex].size - 100) * left / 100;
-    let posX = e.clientX - $('#background').offset().left;
-    let posY = e.clientY - $('#background').offset().top;
+    let posX = e.clientX - start.x;//calculate the distance the mouse moved from mousedown event to current position
+    let posY = e.clientY - start.y;
     posX *= 100 / $('#background').width();
     posY *= 100 / $('#background').height();
-    posX -= offset;
-    layers[layerIndex].sprites[movingImg].x = posX;
-    layers[layerIndex].sprites[movingImg].y = posY;
+    layers[layerIndex].sprites[movingImg].x = start.ix + posX;//set the image pos as the initial pos + the distance the mouse moved
+    layers[layerIndex].sprites[movingImg].y = start.iy + posY;
     updateSprite(layers[layerIndex].sprites[movingImg], $($('.layer.layer' + layerIndex + ' img')[movingImg]), offset);
 }
 
@@ -262,6 +374,9 @@ function updateView() {
     let color = layers[layerIndex].color;
     $('.layer-color .color').attr('style', 'background-color:rgba(' + color[0] + ',' + color[1] + ',' + color[2] + ',' + color[3] + ')');
     $('.layer-color .color').attr('data-color-id', layers[layerIndex].color_id);
+    $('#sprite-editor-zone').find('*').remove();
+    $('.layer:not(.layer' + layerIndex + ') img').css('pointer-events', 'none');
+    $('.layer.layer' + layerIndex + ' img').css('pointer-events', 'all');
 }
 
 function updateSprite(spriteObject, spriteElement, offset) {
@@ -303,7 +418,7 @@ function fillLayers() {
             num++;
         for (let j = 0; j < num; j++) {
             layers[i].x.push(j * size / (num - 1));
-            layers[i].y.push(i * 100 / layers.length);
+            layers[i].y.push(i * 100 / (layers.length - 1));
         }
         layers[i].x.push(size);
         layers[i].y.push(100);
