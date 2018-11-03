@@ -12,6 +12,7 @@ var start = undefined;
 
 var editedImg = undefined;
 var editSize = false;
+var editRotation = false;
 
 function clamp(num, min, max) {
     return num <= min ? min : num >= max ? max : num;
@@ -208,12 +209,13 @@ $(document).ready(function () {
                 id: sprite_id,
                 x: 100 * (posX - zoneX) / width + offset,
                 y: 100 * (posY - zoneY) / height,
-                size: 10
+                size: 10,
+                rotation: 0
             };
             layers[layerIndex].sprites.push(sprite);
-            $('.layer' + layerIndex + ':not(.handle)').append('<img draggable="false" class="center image pos-absolute" src="' + image.attr('src')
+            $('.layer' + layerIndex + ':not(.handle)').append('<img draggable="false" class="image pos-absolute" src="' + image.attr('src')
                 + '" style="left: ' + (sprite.x - offset) + '%; top: ' + sprite.y
-                + '%; width: ' + sprite.size + '%; height: auto"/>');
+                + '%; width: ' + sprite.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + sprite.rotation + 'deg)"/>');
         }
         $(this).remove();
         sprite_id = undefined;
@@ -247,22 +249,24 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.layer img', function (e) {
-        if ($(this).parent().closest('.layer').hasClass('layer' + layerIndex)){
+        if ($(this).parent().closest('.layer').hasClass('layer' + layerIndex)) {
             let index = $(this).index() - 1;
             let ratio = $(this)[0].naturalHeight / $(this)[0].naturalWidth;
             let size = layers[layerIndex].sprites[index].size;
             let width = size;
+            let rotation = layers[layerIndex].sprites[index].rotation;
             let height = size * ratio;
             let left = getScrollLeft();
             let offset = (layers[layerIndex].size - 100) * left / 100;
             let x = layers[layerIndex].sprites[index].x - offset;
             let y = layers[layerIndex].sprites[index].y;
 
-            let editor = '<div draggable="false" class="sprite-editor" style="left:' + x + '%; top:' + y + '%; width:' + width + '%; padding-top:' + height + '%">'
+            let editor = '<div draggable="false" class="sprite-editor" style="left:' + x + '%; top:' + y + '%; width:' + width + '%; padding-top:' + height + '%; transform: translateX(-50%) translateY(-50%) rotate(' + rotation + 'deg)">'
                 + '<div draggable="false" class="sprite-handle pos-absolute circle-10 active-color top-left pivot-center"></div>'
                 + '<div draggable="false" class="sprite-handle pos-absolute circle-10 active-color top-right pivot-center"></div>'
                 + '<div draggable="false" class="sprite-handle pos-absolute circle-10 active-color bottom-right pivot-center"></div>'
                 + '<div draggable="false" class="sprite-handle pos-absolute circle-10 active-color bottom-left pivot-center"></div>'
+                + '<div draggable="false" class="sprite-rotator pos-absolute circle-10 active-color pivot-center pos-title"></div>'
                 + '</div>';
 
             $('#sprite-editor-zone').append(editor);
@@ -271,11 +275,11 @@ $(document).ready(function () {
         }
     });
 
-    $(document).on('click', '*:not(.layer img):not(.sprite-editor div)', function () {
+    $(document).on('click', '*:not(.layer img):not(.sprite-editor .sprite-handle)', function () {
         $('#sprite-editor-zone').find('*').remove();
     });
 
-    $(document).on('mousedown', '.sprite-editor div', function () {
+    $(document).on('mousedown', '.sprite-editor .sprite-handle', function () {
         editSize = true;
     });
 
@@ -286,28 +290,65 @@ $(document).ready(function () {
             let curY = e.clientY;
             let image = $($('.layer.layer' + layerIndex + ' img')[editedImg]);
             let ratio = image[0].naturalHeight / image[0].naturalWidth;
-            let angle = toRadians(getRotationDegrees(editor));
+            let angle = toRadians(layers[layerIndex].sprites[editedImg].rotation);
             let w = editor.outerWidth() / 2;
             let h = editor.outerHeight() / 2;
             let posX = editor.offset().left + Math.cos(angle) * w - Math.sin(angle) * h;
             let posY = editor.offset().top + Math.cos(angle) * h + Math.sin(angle) * w;
-            let diffX = Math.abs(curX - posX);
-            let diffY = Math.abs(curY - posY);
-            let beta = (Math.atan2(diffX, diffY));
+            let diffX = (curX - posX);
+            let diffY = (curY - posY);
+            let rX = Math.abs(diffX * Math.cos(-angle) - diffY * Math.sin(-angle));
+            let rY = Math.abs(diffX * Math.sin(-angle) + diffY * Math.cos(-angle));
             let left = getScrollLeft();
             let offset = (layers[layerIndex].size - 100) * left / 100;
-            let size = 2 * Math.sin(angle + beta) * Math.sqrt(diffX * diffX + diffY * diffY);
+            let size = 2 * Math.min(rY / ratio, rX);
             size *= 100 / $('#background').width();
             layers[layerIndex].sprites[editedImg].size = size;
             updateSprite(layers[layerIndex].sprites[editedImg], $($('.layer.layer' + layerIndex + ' img')[editedImg]), offset);
             let x = layers[layerIndex].sprites[editedImg].x - offset;
             let y = layers[layerIndex].sprites[editedImg].y;
-            editor.attr('style', 'left: ' + x + '%; top:' + y + '%; width:' + size + '%; padding-top:' + size * ratio + '%');
+            let rotation = layers[layerIndex].sprites[editedImg].rotation;
+            editor.attr('style', 'left: ' + x + '%; top:' + y + '%; width:' + size + '%; padding-top:' + size * ratio + '%; transform: translateX(-50%) translateY(-50%) rotate(' + rotation + 'deg)');
         }
     });
 
     $(document).on('mouseup', 'body', function () {
         editSize = false;
+        editRotation = false;
+    });
+
+    $(document).on('mousedown', '.sprite-editor .sprite-rotator', function () {
+        editRotation = true;
+    });
+
+    $(document).on('mousemove', 'body', function (e) {
+        if (editRotation) {
+            let editor = $('.sprite-editor');
+            let curX = e.clientX;
+            let curY = e.clientY;
+            let image = $($('.layer.layer' + layerIndex + ' img')[editedImg]);
+            let ratio = image[0].naturalHeight / image[0].naturalWidth;
+            let s = image.attr('style');
+            let left = getScrollLeft();
+            let offset = (layers[layerIndex].size - 100) * left / 100;
+            let x = Number(s.substring(s.indexOf('left:') + 'left:'.length, s.indexOf('%')));
+            let y = Number(s.substring(s.indexOf('top:') + 'top:'.length, s.indexOf('%', s.indexOf('%') + 1)));
+            x /= 100 / $('#background').width();
+            y /= 100 / $('#background').height();
+            curX -= $('#background').offset().left;
+            curY -= $('#background').offset().top;
+            let diffX = curX - x;
+            let diffY = curY - y;
+            let alpha = Math.atan2(diffY, diffX);
+            alpha = toDegrees(alpha);
+            alpha += 90;
+            let size = layers[layerIndex].sprites[editedImg].size;
+            layers[layerIndex].sprites[editedImg].rotation = alpha;
+            updateSprite(layers[layerIndex].sprites[editedImg], $($('.layer.layer' + layerIndex + ' img')[editedImg]), offset);
+            x = layers[layerIndex].sprites[editedImg].x - offset;
+            y = layers[layerIndex].sprites[editedImg].y;
+            editor.attr('style', 'left: ' + x + '%; top:' + y + '%; width:' + size + '%; padding-top:' + size * ratio + '%; transform: translateX(-50%) translateY(-50%) rotate(' + alpha + 'deg)');
+        }
     });
 });
 
@@ -317,21 +358,6 @@ function toDegrees(angle) {
 
 function toRadians(angle) {
     return angle * (Math.PI / 180);
-}
-
-function getRotationDegrees(obj) {
-    var matrix = obj.css("-webkit-transform") ||
-        obj.css("-moz-transform") ||
-        obj.css("-ms-transform") ||
-        obj.css("-o-transform") ||
-        obj.css("transform");
-    if (matrix !== 'none') {
-        var values = matrix.split('(')[1].split(')')[0].split(',');
-        var a = values[0];
-        var b = values[1];
-        var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
-    } else { var angle = 0; }
-    return (angle < 0) ? angle + 360 : angle;
 }
 
 function moveImage(e) {
@@ -382,7 +408,7 @@ function updateView() {
 function updateSprite(spriteObject, spriteElement, offset) {
     spriteElement.attr('style', 'left: '
         + (spriteObject.x - offset) + '%; top: '
-        + spriteObject.y + '%; width: ' + spriteObject.size + '%; height: auto');
+        + spriteObject.y + '%; width: ' + spriteObject.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + spriteObject.rotation + 'deg)');
 }
 
 function updateLayer(target) {

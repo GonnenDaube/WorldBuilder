@@ -74,7 +74,6 @@
 
 .sprite-editor {
     position: absolute;
-    transform: translateX(-50%) translateY(-50%);
     border: 1px dashed var(--trans-active-color);
 }
 
@@ -108,7 +107,19 @@
     left: 100%;
 }
 
+.pos-title{
+    position:absolute;
+    top:-50px;
+    left:50%;
+}
+
 .sprite-handle{
     cursor:pointer;
     pointer-events:all;
+}
+
+.sprite-rotator{
+    cursor:pointer;
+    pointer-events:all;
+    border: 1px solid var(--dark-color);
 }
