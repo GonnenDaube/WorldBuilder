@@ -291,17 +291,18 @@ $(document).ready(function () {
             let image = $($('.layer.layer' + layerIndex + ' img')[editedImg]);
             let ratio = image[0].naturalHeight / image[0].naturalWidth;
             let angle = toRadians(layers[layerIndex].sprites[editedImg].rotation);
-            let w = editor.outerWidth() / 2;
-            let h = editor.outerHeight() / 2;
-            let posX = editor.offset().left + Math.cos(angle) * w - Math.sin(angle) * h;
-            let posY = editor.offset().top + Math.cos(angle) * h + Math.sin(angle) * w;
-            let diffX = (curX - posX);
-            let diffY = (curY - posY);
+            let boundingbox = editor[0].getBoundingClientRect();
+            let w = boundingbox.width / 2;
+            let h = boundingbox.height / 2;
+            let posX = boundingbox.left + w;//will always return center x
+            let posY = boundingbox.top + h;// will always return center y
+            let diffX = curX - posX;
+            let diffY = posY - curY;
             let rX = Math.abs(diffX * Math.cos(-angle) - diffY * Math.sin(-angle));
             let rY = Math.abs(diffX * Math.sin(-angle) + diffY * Math.cos(-angle));
             let left = getScrollLeft();
             let offset = (layers[layerIndex].size - 100) * left / 100;
-            let size = 2 * Math.min(rY / ratio, rX);
+            let size = 2 * Math.max(rY / ratio, rX);
             size *= 100 / $('#background').width();
             layers[layerIndex].sprites[editedImg].size = size;
             updateSprite(layers[layerIndex].sprites[editedImg], $($('.layer.layer' + layerIndex + ' img')[editedImg]), offset);
