@@ -297,7 +297,7 @@ $(document).ready(function () {
             let posX = boundingbox.left + w;//will always return center x
             let posY = boundingbox.top + h;// will always return center y
             let diffX = curX - posX;
-            let diffY = posY - curY;
+            let diffY = curY - posY;
             let rX = Math.abs(diffX * Math.cos(-angle) - diffY * Math.sin(-angle));
             let rY = Math.abs(diffX * Math.sin(-angle) + diffY * Math.cos(-angle));
             let left = getScrollLeft();
