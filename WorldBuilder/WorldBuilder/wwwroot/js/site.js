@@ -205,17 +205,19 @@ $(document).ready(function () {
         if ((posX > zoneX && posX < zoneX + width) &&
             (posY > zoneY && posY < zoneY + height)) {
             //in range
+            let zIndex = maxZIndex(layers[layerIndex].sprites) + 1;
             let sprite = {
                 id: sprite_id,
                 x: 100 * (posX - zoneX) / width + offset,
                 y: 100 * (posY - zoneY) / height,
                 size: 10,
-                rotation: 0
+                rotation: 0,
+                zIndex: zIndex
             };
             layers[layerIndex].sprites.push(sprite);
             $('.layer' + layerIndex + ':not(.handle)').append('<img draggable="false" class="image pos-absolute" src="' + image.attr('src')
                 + '" style="left: ' + (sprite.x - offset) + '%; top: ' + sprite.y
-                + '%; width: ' + sprite.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + sprite.rotation + 'deg)"/>');
+                + '%; width: ' + sprite.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + sprite.rotation + 'deg); z-index:' + sprite.zIndex + '"/>');
         }
         $(this).remove();
         sprite_id = undefined;
@@ -351,7 +353,50 @@ $(document).ready(function () {
             editor.attr('style', 'left: ' + x + '%; top:' + y + '%; width:' + size + '%; padding-top:' + size * ratio + '%; transform: translateX(-50%) translateY(-50%) rotate(' + alpha + 'deg)');
         }
     });
+
+    $(document).on('keyup', 'body', function (e) {
+        let keycode = e.keyCode ? e.keyCode : e.which;
+        if (keycode == 46) {//delete key
+            if (editedImg != undefined) {
+                layers[layerIndex].sprites.splice(editedImg, 1);//remove sprite from metadata
+                $($('.layer.layer' + layerIndex + ' img')[editedImg]).remove();//remove sprite from DOM
+                $('.sprite-editor').remove();//remove editor from DOM
+                editedImg = undefined;
+            }
+        }
+    });
+
+    $(document).on('keyup', 'body', function (e){
+        let keycode = e.keyCode ? e.keyCode : e.which;
+        if (keycode == 38) {//arrow up
+            if (editedImg != undefined) {//move forward
+                layers[layerIndex].sprites[editedImg].zIndex++;
+                let left = getScrollLeft();
+                let offset = (layers[layerIndex].size - 100) * left / 100;
+                updateSprite(layers[layerIndex].sprites[editedImg], $($('.layer.layer' + layerIndex + ' img')[editedImg]), offset);
+            }
+        }
+        if (keycode == 40) {//arrow down
+            if (editedImg != undefined) {//move backward
+                layers[layerIndex].sprites[editedImg].zIndex--;
+                let left = getScrollLeft();
+                let offset = (layers[layerIndex].size - 100) * left / 100;
+                updateSprite(layers[layerIndex].sprites[editedImg], $($('.layer.layer' + layerIndex + ' img')[editedImg]), offset);
+            }
+        }
+    });
 });
+
+function maxZIndex(sprites) {
+    let max = 0;
+    for (let i = 0; i < sprites.length; i++) {
+        if (sprites[max].zIndex < sprites[i].zIndex)
+            max = i;
+    }
+    if (sprites.length > 0)
+        return sprites[max].zIndex;
+    return -1;
+}
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -409,7 +454,7 @@ function updateView() {
 function updateSprite(spriteObject, spriteElement, offset) {
     spriteElement.attr('style', 'left: '
         + (spriteObject.x - offset) + '%; top: '
-        + spriteObject.y + '%; width: ' + spriteObject.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + spriteObject.rotation + 'deg)');
+        + spriteObject.y + '%; width: ' + spriteObject.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + spriteObject.rotation + 'deg); z-index:' + spriteObject.zIndex);
 }
 
 function updateLayer(target) {
