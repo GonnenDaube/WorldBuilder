@@ -64,7 +64,7 @@ let layers = [
         'y': [],
         'size': undefined,
         'color': [0, 0, 0, 1],
-        'color-id': undefined,
+        'color_id': undefined,
         'sprites': []
     }
 ];
@@ -383,6 +383,18 @@ $(document).ready(function () {
                 let offset = (layers[layerIndex].size - 100) * left / 100;
                 updateSprite(layers[layerIndex].sprites[editedImg], $($('.layer.layer' + layerIndex + ' img')[editedImg]), offset);
             }
+        }
+    });
+
+    $(document).on('click', '[data-target="submit-world"]', function () {
+        let valid = true;
+        for (let i = 0; i < layers.length; i++) {
+            if (layers[i].color_id == undefined)
+                valid = false;
+        }
+        if (valid) {
+            //submit world
+            postWorld(layers);
         }
     });
 });

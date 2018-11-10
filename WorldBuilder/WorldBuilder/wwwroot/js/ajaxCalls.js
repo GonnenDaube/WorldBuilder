@@ -170,3 +170,25 @@ function deleteSprite(id) {
         }
     });
 }
+
+function postWorld(layers) {
+    let jsonData = JSON.stringify(layers);
+    $.ajax({
+        url: siteURL + 'WorldBuilder/_PostWorld',
+        type: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type':'application/json'
+        },
+        data: jsonData,
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                //window.location = siteURL + 'Worlds';
+            }
+        },
+        error: function (response) {
+
+        }
+    });
+}

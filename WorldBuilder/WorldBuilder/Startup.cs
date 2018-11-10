@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.Features;
+using WorldBuilder.Code;
 
 namespace WorldBuilder
 {
@@ -31,7 +33,12 @@ namespace WorldBuilder
                 options.Cookie.HttpOnly = true;
             });
 
-            services.AddMvc();
+            services.Configure<FormOptions>(x => x.KeyLengthLimit = 100 * 1024);//100 KB limit
+
+            services.AddMvc(options =>
+            {
+                options.InputFormatters.Insert(0, new RawJsonBodyInputFormatter());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
