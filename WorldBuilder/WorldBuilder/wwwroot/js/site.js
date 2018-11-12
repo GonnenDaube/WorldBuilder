@@ -1,6 +1,6 @@
 ﻿
 var handleIndex = -1;
-var layerIndex = window.location.pathname.includes('/WorldBuilder/Index') ? 0 : -1;
+var layerIndex = window.location.pathname.includes('/WorldBuilder') ? 0 : -1;
 
 let numHandles;
 let worldSize;
@@ -20,52 +20,52 @@ function clamp(num, min, max) {
 
 let layers = [
     {
-        'x': [],
-        'y': [],
-        'size': undefined,
-        'color': [255, 255, 255, 1],
-        'color_id': undefined,
-        'sprites': []
+        x: [],
+        y: [],
+        size: undefined,
+        color: [255, 255, 255, 1],
+        color_id: undefined,
+        sprites: []
     },
     {
-        'x': [],
-        'y': [],
-        'size': undefined,
-        'color': [200, 200, 200, 1],
-        'color_id': undefined,
-        'sprites': []
+        x: [],
+        y: [],
+        size: undefined,
+        color: [200, 200, 200, 1],
+        color_id: undefined,
+        sprites: []
     },
     {
-        'x': [],
-        'y': [],
-        'size': undefined,
-        'color': [150, 150, 150, 1],
-        'color_id': undefined,
-        'sprites': []
+        x: [],
+        y: [],
+        size: undefined,
+        color: [150, 150, 150, 1],
+        color_id: undefined,
+        sprites: []
     },
     {
-        'x': [],
-        'y': [],
-        'size': undefined,
-        'color': [100, 100, 100, 1],
-        'color_id': undefined,
-        'sprites': []
+        x: [],
+        y: [],
+        size: undefined,
+        color: [100, 100, 100, 1],
+        color_id: undefined,
+        sprites: []
     },
     {
-        'x': [],
-        'y': [],
-        'size': undefined,
-        'color': [50, 50, 50, 1],
-        'color_id': undefined,
-        'sprites': []
+        x: [],
+        y: [],
+        size: undefined,
+        color: [50, 50, 50, 1],
+        color_id: undefined,
+        sprites: []
     },
     {
-        'x': [],
-        'y': [],
-        'size': undefined,
-        'color': [0, 0, 0, 1],
-        'color_id': undefined,
-        'sprites': []
+        x: [],
+        y: [],
+        size: undefined,
+        color: [0, 0, 0, 1],
+        color_id: undefined,
+        sprites: []
     }
 ];
 
@@ -77,8 +77,10 @@ let finalPY;
 $(document).ready(function () {
     //callValues();
     if (layerIndex != -1) {
-        fillLayers();
-        updateView();
+        if (window.location.pathname.includes('/WorldBuilder/Edit'))
+            getWorld($('[data-world-id]').attr('data-world-id'), fillFromServer, fillLayers);
+        else
+            fillLayers();
     }
 
     $(document).on('mousedown', '.handle:not(.slider .handle)', function (e) {
@@ -136,6 +138,22 @@ $(document).ready(function () {
                 if (!awaitingGetSpriteResult) {
                     awaitingGetSpriteResult = true;
                     getSprites($(this).find('.image').length, 10, loadSpritesToAside);
+                }
+        }
+    });
+
+    if (window.location.pathname.includes('/Worlds')) {
+        getWorlds(0, 10, loadWorldsToContent);
+        getWorldNum();
+    }
+
+    $(document).on('mousewheel', 'content[data-target="worlds"]', function () {
+        if ($(this).scrollTop() + $(this).height() == $(this).prop('scrollHeight')) {
+            //if reached bottom of element, load more
+            if ($(this).find('[data-world-id]').length < worldMaxNumber)
+                if (!awaitingGetWorldsResult) {
+                    awaitingGetWorldsResult = true;
+                    getWorlds($(this).find('[data-world-id]').length, 10, loadWorldsToContent);
                 }
         }
     });
@@ -394,10 +412,29 @@ $(document).ready(function () {
         }
         if (valid) {
             //submit world
-            postWorld(layers);
+            let world = {
+                layers: layers,
+                portals: [],//TODO: implement portals
+                name: $('[data-role="world-name"]').val(),
+                planet_id: '68cef04fb45a4074804769e1ead3fdfb'
+            }
+            postWorld(world);
         }
     });
 });
+
+function loadWorldsToContent(response) {
+    if (response != null) {
+        for (let i = 0; i < response.length; i++) {
+            $('content[data-target="worlds"]').append(
+                '<div class="card" data-world-id="'
+                + response[i].item1 + '"><label class="col-lg-6 col-md-6">'
+                + response[i].item2 + '</label><div class="options col-lg-6 col-md-6 float-right"><a href="'
+                + ("WorldBuilder/Edit/" + response[i].item1) + '"><i class="font-24 far fa-edit"></i></a>'
+                + '<a data-remove="world" class="danger" href="javascript:void(0)"><i class="font-24 fas fa-trash"></i></a></div></div>');//TODO: implement remove world
+        }
+    }
+}
 
 function maxZIndex(sprites) {
     let max = 0;
@@ -508,6 +545,47 @@ function fillLayers() {
         layers[i].y.push(100);
         layers[i].size = size;
     }
+    updateView();
+}
+
+function fillFromServer(world) {
+    layers = world.layers;
+    worldSize =  layers[5].size / 10;
+    numHandles = layers[5].x.length;
+    let width = 100 * (10 / worldSize);
+    $('.scroll-handle').attr('style', 'left:' + width / 2 + '%; width:' + width + '%');
+    let sprite_ids = [];
+
+    for (let i = 0; i < layers.length; i++) {
+        for (let j = 0; j < layers[i].x - 2; j++) {
+            $('#handles').append('<div class="handle layer' + i + '"></div>');
+        }
+
+        for (let j = 0; j < layers[i].sprites.length; j++)
+            sprite_ids.push(layers[i].sprites[j].id);
+    }
+
+    getSpritesSources(sprite_ids, genSprites);
+    $('[data-role="world-name"]').val(world.name);
+    updateView();
+}
+
+function genSprites(response) {
+    let scroll_left = getScrollLeft();
+    let offset;
+    for (let i = 0; i < response.length; i++) {
+        console.log(response.keys[0]);
+    }
+    for (let i = 0; i < layers.length; i++) {
+        offset = (layers[i].size - 100) * scroll_left / 100;
+        for (let j = 0; j < layers[i].sprites.length; j++) {
+            let sprite = layers[i].sprites[j];
+            $('.layer' + i + ':not(.handle)').append('<img draggable="false" class="image pos-absolute" src="' + response[sprite.id]
+                + '" style="left: ' + (sprite.x - offset) + '%; top: ' + sprite.y
+                + '%; width: ' + sprite.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + sprite.rotation + 'deg); z-index:' + sprite.zIndex + '"/>');
+        }
+    }
+    updateView();
 }
 
 function moveHandleEvent(event, index) {

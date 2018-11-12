@@ -54,6 +54,46 @@ namespace WorldStorage.Controllers
         }
 
         [HttpGet]
+        public async Task<Dictionary<string, string>> GetAsync(List<string> ids)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                Dictionary<string, string> res = new Dictionary<string, string>();
+                string id, file, name;
+                byte[] data;
+                await connection.OpenAsync();
+                string query = "SELECT s.sprite_type_id, s.image, s.name FROM [SpriteTypes] as s WHERE s.sprite_type_id IN (";//only selects sprites that appear in the list
+                for(int i = 0; i < ids.Count; i++)
+                {
+                    query += "'" + ids[i] + ((i == ids.Count - 1) ? "');" : "', ");
+                }
+
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                while (reader.Read())
+                {
+                    id = reader.GetString(0);
+                    data = (byte[])reader["image"];
+                    name = (string)reader["name"];
+                    file = Convert.ToBase64String(data);
+                    file = "data:image/" + name.Substring(name.IndexOf('.') + 1) + ";base64," + file;
+                    res.Add(id, file);
+                }
+                reader.Close();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        [HttpGet]
         public async Task<int> GetNumberAsync()
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");

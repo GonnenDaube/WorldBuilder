@@ -7,11 +7,11 @@ namespace WorldBuilder.Code
 {
     public class Layer
     {
-        public float[] x;
-        public float[] y;
+        public List<float> x;
+        public List<float> y;
         public float size;
-        public int[] color;
+        public List<float> color;
         public string color_id;
-        public Sprite[] sprites;
+        public List<Sprite> sprites;
     }
 }

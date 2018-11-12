@@ -8,10 +8,10 @@ namespace WorldBuilder.Code
     public class Sprite
     {
         public string id;
-        public int x;
-        public int y;
-        public int size;
-        public int rotation;
+        public float x;
+        public float y;
+        public float size;
+        public float rotation;
         public int zIndex;
     }
 }

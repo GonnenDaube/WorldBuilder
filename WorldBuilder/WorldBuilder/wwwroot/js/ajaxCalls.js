@@ -6,7 +6,9 @@ var apiURL = 'http://localhost:50223/WorldApi/';
 var colorMaxNumber;
 var awaitingGetColorResult;
 var spriteMaxNumber;
+var worldMaxNumber;
 var awaitingGetSpriteResult;
+var awaitingGetWorldsResult;
 //
 
 function postColor(r, g, b, a) {
@@ -139,6 +141,22 @@ function getSprites(offset, ammount, onsuccess) {
     });
 }
 
+function getSpritesSources(ids, onsuccess) {
+    let jsonData = JSON.stringify(ids);
+    $.ajax({
+        url: siteURL + 'SpriteBuilder/_GetSpriteSources',
+        type: 'GET',
+        contentType: "application/json; charset=utf-8",
+        data: jsonData,
+        datatype: 'json',
+        success: function (response) {
+            onsuccess(response);
+        },
+        error: function (response) {
+        }
+    });
+}
+
 function getSpriteNum() {
     $.ajax({
         url: siteURL + 'SpriteBuilder/_GetSpriteNumber',
@@ -149,6 +167,59 @@ function getSpriteNum() {
         },
         error: function (response) {
             spriteMaxNumber = 0;
+        }
+    });
+}
+
+function getWorlds(offset, ammount, onsuccess) {
+    $.ajax({
+        url: siteURL + 'Worlds/_GetWorlds',
+        type: 'GET',
+        data: {
+            offset: offset,
+            ammount: ammount
+        },
+        datatype: 'json',
+        success: function (response) {
+            awaitingGetWorldsResult = false;
+            onsuccess(response);
+        },
+        error: function (response) {
+            awaitingGetWorldsResult = false;
+        }
+    });
+}
+
+function getWorld(id, onsuccess, onerror) {
+    $.ajax({
+        url: siteURL + 'WorldBuilder/_GetWorld',
+        type: 'GET',
+        data: {
+            id: id
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response != null || response != undefined)
+                onsuccess(response);
+            else
+                onerror();
+        },
+        error: function (response) {
+            onerror();
+        }
+    });
+}
+
+function getWorldNum() {
+    $.ajax({
+        url: siteURL + 'Worlds/_GetWorldNumber',
+        type: 'GET',
+        datatype: 'json',
+        success: function (response) {
+            worldMaxNumber = response;
+        },
+        error: function (response) {
+            worldMaxNumber = 0;
         }
     });
 }
@@ -171,8 +242,8 @@ function deleteSprite(id) {
     });
 }
 
-function postWorld(layers) {
-    let jsonData = JSON.stringify(layers);
+function postWorld(world) {
+    let jsonData = JSON.stringify(world);
     $.ajax({
         url: siteURL + 'WorldBuilder/_PostWorld',
         type: 'POST',
@@ -184,7 +255,7 @@ function postWorld(layers) {
         datatype: 'json',
         success: function (response) {
             if (response) {
-                //window.location = siteURL + 'Worlds';
+                window.location = siteURL + 'Worlds';
             }
         },
         error: function (response) {

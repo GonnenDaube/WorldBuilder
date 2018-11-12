@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Edit World";
+}
+
+<input type="text" data-world-id="@ViewBag.WorldId" class="hidden"/>
+
+<content class="col-md-12 col-lg-12 margin-top-30" style="height:750px; border:solid 1px gray; clip-path: inset(0 0 0 0)">
+    <div id="background" class="full-size">
+        <div class="layer layer0 full-size" style="z-index:0">
+            <div id="layer0" class="full-size" style=""></div>
+        </div>
+        <div class="layer layer1 full-size" style="z-index:1">
+            <div id="layer1" class="full-size" style=""></div>
+        </div>
+        <div class="layer layer2 full-size" style="z-index:2">
+            <div id="layer2" class="full-size" style=""></div>
+        </div>
+        <div class="layer layer3 full-size" style="z-index:3">
+            <div id="layer3" class="full-size" style=""></div>
+        </div>
+        <div class="layer layer4 full-size" style="z-index:4">
+            <div id="layer4" class="full-size" style=""></div>
+        </div>
+        <div class="layer layer5 full-size" style="z-index:5">
+            <div id="layer5" class="full-size" style=""></div>
+        </div>
+    </div>
+    <div id="handles" class="full-size" style="z-index:7"></div>
+    <div id="sprite-editor-zone" class="full-size" style="z-index:6">
+    </div>
+</content>
+
+<div class="col-md-12 col-lg-12 margin-top-30 margin-bottom-30 scroll-bar">
+    <div class="scroll-handle"></div>
+</div>
+
+<aside style="z-index:100">
+    <div class="col-lg-12 col-md-12 margin-top-100 font-18 light text-center">
+        <label>World Name:</label>
+    </div>
+    <div class="col-lg-12 col-md-12 margin-top-30 font-18 light text-center">
+        <input class="text-field dark" type="text" data-role="world-name" value="New_World" />
+    </div>
+    <div class="col-lg-12 col-md-12 margin-top-30 font-18 light text-center">
+        <label>Select layer to edit:</label>
+    </div>
+    <div class="slider col-md-10 col-lg-10 horizontal-center">
+        <div class="bar"></div>
+        <div class="handle" style="left:0%"></div>
+        <input type="range" min="0" max="5" class="hidden" />
+    </div>
+    <div class="col-lg-12 col-md-12 margin-top-30 font-18 light text-center">
+        <label>Select layer color:</label>
+    </div>
+    <div class="layer-color col-md-12 col-lg-12 margin-top-10 horizontal-center">
+        <div class="color pos-absolute horizontal-center">
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 margin-top-100 font-18 light text-center">
+        <label>Add sprites to layer:</label>
+    </div>
+    <div class="sprite-info-selector col-md-12 col-lg-12 margin-top-10 horizontal-center">
+        <i class="col-lg-12 col-md-12 far fa-images text-center light font-50 pointer"></i>
+    </div>
+
+    <div class="col-lg-12 col-md-12 bottom-30 margin-bottom-30 pos-absolute">
+        <button class="btn-default primary horizontal-center pos-absolute" data-target="update-world">Update</button>
+    </div>
+</aside>
+
+<aside id="color-selector" class="closed small" data-role="sidebar" style="z-index:99;">
+    <div data-target="colors" class="server-color col-lg-12 col-md-12 margin-top-100 horizontal-center">
+
+    </div>
+</aside>
+
+<aside id="sprite-selector" class="closed small" data-role="sidebar" style="z-index:98;">
+    <div data-target="images" class="server-image col-lg-12 col-md-12 margin-top-100 horizontal-center">
+
+    </div>
+</aside>

@@ -123,3 +123,55 @@
     pointer-events:all;
     border: 1px solid var(--dark-color);
 }
+
+.text-field{
+    background-color:transparent;
+    border:none;
+}
+
+    .text-field.dark {
+        color: var(--light-color);
+        caret-color: var(--light-color);
+        border-bottom: 1px solid var(--light-color);
+        transition:border-bottom ease-in-out 0.1s;
+    }
+
+    .text-field:active, .text-field:focus{
+        border-bottom:1px solid var(--active-color);
+        outline:none;
+    }
+
+.card {
+    width: 80%;
+    height: 100px;
+    background-color: var(--light-color);
+    box-shadow: 4px 6px 19px -5px rgba(0,0,0,0.5);
+    margin-bottom:25px;
+}
+
+a{
+    color:var(--dark-color);
+    transition:color ease-in-out 0.1s;
+}
+
+a:focus, a:active, a:hover{
+    color:var(--active-color);
+}
+
+a.danger:focus, a.danger:active, a.danger:hover{
+    color:var(--danger-color);
+}
+
+.card label{
+    font-size:18px;
+    padding-top:17px;
+}
+
+.card .options{
+    padding-top:35px;
+}
+
+.card .options>*{
+    float:right;
+    margin-right:20px;
+}

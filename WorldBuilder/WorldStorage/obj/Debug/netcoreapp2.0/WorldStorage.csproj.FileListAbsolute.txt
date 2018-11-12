@@ -8,3 +8,4 @@ D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debu
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.AssemblyInfo.cs
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.dll
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.pdb
+D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.csprojAssemblyReference.cache

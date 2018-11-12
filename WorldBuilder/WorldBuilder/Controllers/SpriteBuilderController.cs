@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WorldStorage.Controllers;
 
 namespace WorldBuilder.Controllers
@@ -25,6 +26,18 @@ namespace WorldBuilder.Controllers
         public async Task<ActionResult> _GetSprites(int offset, int ammount)
         {
             List<Tuple<string, string, string>> res = await new SpriteController().GetAsync(offset, ammount);
+            return Json(res);
+        }
+
+        [HttpGet]
+        [RequestSizeLimit(100 * 1024)]
+        public async Task<ActionResult> _GetSpriteSources(string value)
+        {
+            
+            if (value == null || value == "")
+                value = Uri.UnescapeDataString(Request.QueryString.Value.Substring(1));
+            List<string> ids = JsonConvert.DeserializeObject<List<string>>(value);
+            Dictionary<string, string> res = await new SpriteController().GetAsync(ids);
             return Json(res);
         }
 
