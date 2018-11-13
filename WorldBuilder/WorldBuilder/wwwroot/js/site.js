@@ -388,6 +388,7 @@ $(document).ready(function () {
         let keycode = e.keyCode ? e.keyCode : e.which;
         if (keycode == 38) {//arrow up
             if (editedImg != undefined) {//move forward
+                moveByZIndex(layers[layerIndex].sprites[editedImg].zIndex + 1, -1);//move sprite with zIndex + 1 backward
                 layers[layerIndex].sprites[editedImg].zIndex++;
                 let left = getScrollLeft();
                 let offset = (layers[layerIndex].size - 100) * left / 100;
@@ -396,6 +397,7 @@ $(document).ready(function () {
         }
         if (keycode == 40) {//arrow down
             if (editedImg != undefined) {//move backward
+                moveByZIndex(layers[layerIndex].sprites[editedImg].zIndex - 1, 1);//move sprite with zIndex + 1 backward
                 layers[layerIndex].sprites[editedImg].zIndex--;
                 let left = getScrollLeft();
                 let offset = (layers[layerIndex].size - 100) * left / 100;
@@ -422,6 +424,18 @@ $(document).ready(function () {
         }
     });
 });
+
+function moveByZIndex(zIndex, dir) {
+    //dir = -1 : backward
+    //dir = 1 : forward
+    let index = -1;
+    for (let i = 0; i < layers[layerIndex].sprites.length; i++) {
+        if (layers[layerIndex].sprites[i].zIndex == zIndex)
+            index = i;
+    }
+    if (index != -1)
+        layers[layerIndex].sprites[index].zIndex += dir;
+}
 
 function loadWorldsToContent(response) {
     if (response != null) {
@@ -557,7 +571,7 @@ function fillFromServer(world) {
     let sprite_ids = [];
 
     for (let i = 0; i < layers.length; i++) {
-        for (let j = 0; j < layers[i].x - 2; j++) {
+        for (let j = 0; j < layers[i].x.length - 2; j++) {
             $('#handles').append('<div class="handle layer' + i + '"></div>');
         }
 

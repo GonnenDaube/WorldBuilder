@@ -14,17 +14,16 @@ namespace WorldStorage.Controllers
     public class ColorController : Controller
     {
         [HttpGet]
-        public async Task<List<Tuple<string, byte, byte, byte, float>>> GetAsync(int offset, int ammount)
+        public async Task<List<Tuple<string, float, float, float, float>>> GetAsync(int offset, int ammount)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
             SqlConnection connection = new SqlConnection(connectionString);
             try
             {
-                List<Tuple<string, byte, byte, byte, float>> res = new List<Tuple<string, byte, byte, byte, float>>();
+                List<Tuple<string, float, float, float, float>> res = new List<Tuple<string, float, float, float, float>>();
                 string id;
-                byte r, g, b;
-                float a;
+                float r, g, b, a;
                 await connection.OpenAsync();
                 string query = "SELECT c.color_id, c.r, c.g, c.b, c.a FROM [Colors] as c ORDER BY c.create_time DESC OFFSET @offset ROWS FETCH NEXT @ammount ROWS ONLY;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
@@ -34,11 +33,11 @@ namespace WorldStorage.Controllers
                 while (reader.Read())
                 {
                     id = reader.GetString(0);
-                    r = reader.GetByte(1);
-                    g = reader.GetByte(2);
-                    b = reader.GetByte(3);
+                    r = (float)reader.GetDouble(1);
+                    g = (float)reader.GetDouble(2);
+                    b = (float)reader.GetDouble(3);
                     a = (float)reader.GetDouble(4);
-                    res.Add(new Tuple<string, byte, byte, byte, float>(id, r, g, b, a));
+                    res.Add(new Tuple<string, float, float, float, float>(id, r, g, b, a));
                 }
                 reader.Close();
                 connection.Close();
@@ -80,7 +79,7 @@ namespace WorldStorage.Controllers
         }
 
         [HttpPost]
-        public async Task<int> PostAsync([FromBody]int r,[FromBody] int g,[FromBody] int b,[FromBody] float a)
+        public async Task<int> PostAsync([FromBody]float r,[FromBody] float g,[FromBody] float b,[FromBody] float a)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
