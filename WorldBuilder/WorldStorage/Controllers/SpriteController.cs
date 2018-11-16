@@ -13,7 +13,7 @@ using WorldStorage.Code;
 namespace WorldStorage.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Sprite")]
+    [Route("WorldApi/Sprite")]
     public class SpriteController : Controller
     {
         [HttpGet]
@@ -32,7 +32,7 @@ namespace WorldStorage.Controllers
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@offset", offset);
                 sqlCommand.Parameters.AddWithValue("@ammount", ammount);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 while (reader.Read())
                 {
                     id = reader.GetString(0);
@@ -72,7 +72,7 @@ namespace WorldStorage.Controllers
                 }
 
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 while (reader.Read())
                 {
                     id = reader.GetString(0);
@@ -105,7 +105,7 @@ namespace WorldStorage.Controllers
                 await connection.OpenAsync();
                 string query = "SELECT COUNT(s.sprite_type_id) FROM [SpriteTypes] as s;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 if (reader.Read())
                 {
                     res = reader.GetInt32(0);
@@ -134,7 +134,7 @@ namespace WorldStorage.Controllers
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", sprite);
                 sqlCommand.Parameters.AddWithValue("@normal", normal);
-                int res = sqlCommand.ExecuteNonQuery();
+                int res = await sqlCommand.ExecuteNonQueryAsync();
                 connection.Close();
                 return res;
             }
@@ -164,7 +164,7 @@ namespace WorldStorage.Controllers
                 sqlCommand.Parameters.AddWithValue("@image", data);
                 sqlCommand.Parameters.AddWithValue("@name", name);
                 sqlCommand.Parameters.AddWithValue("@time", DateTime.Now);
-                int res = sqlCommand.ExecuteNonQuery();
+                int res = await sqlCommand.ExecuteNonQueryAsync();
                 connection.Close();
                 return id;
             }
@@ -187,7 +187,7 @@ namespace WorldStorage.Controllers
                 string query = "DELETE FROM [SpriteTypes] WHERE sprite_type_id = @id;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
-                int res = sqlCommand.ExecuteNonQuery();
+                int res = await sqlCommand.ExecuteNonQueryAsync();
                 connection.Close();
                 return res;
             }

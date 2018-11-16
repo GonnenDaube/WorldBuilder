@@ -27,5 +27,12 @@ namespace WorldBuilder.Controllers
             int res = await new WorldController().GetNumberAsync();
             return Json(res);
         }
+
+        [HttpDelete]
+        public async Task<ActionResult> _DeleteWorld(string id)
+        {
+            int res = await new WorldController().DeleteAsync(id);
+            return Json(res);
+        }
     }
 }

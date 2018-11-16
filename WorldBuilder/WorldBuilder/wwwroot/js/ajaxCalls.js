@@ -210,6 +210,23 @@ function getWorld(id, onsuccess, onerror) {
     });
 }
 
+function deleteWorld(id) {
+    $.ajax({
+        url: siteURL + 'Worlds/_DeleteWorld',
+        type: 'DELETE',
+        data: {
+            id: id
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response)
+                window.location = window.location;
+        },
+        error: function (response) {
+        }
+    });
+}
+
 function getWorldNum() {
     $.ajax({
         url: siteURL + 'Worlds/_GetWorldNumber',

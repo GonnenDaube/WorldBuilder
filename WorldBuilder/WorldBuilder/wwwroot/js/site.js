@@ -423,6 +423,11 @@ $(document).ready(function () {
             postWorld(world);
         }
     });
+
+    $(document).on('click', '[data-remove="world"]', function () {
+        let world_id = $(this).parent().closest('.card').attr('data-world-id');
+        deleteWorld(world_id);
+    });
 });
 
 function moveByZIndex(zIndex, dir) {

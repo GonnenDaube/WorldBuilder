@@ -11,7 +11,7 @@ using WorldStorage.Code;
 namespace WorldStorage.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Worlds")]
+    [Route("api/World")]
     public class WorldController : Controller
     {
 
@@ -35,7 +35,7 @@ namespace WorldStorage.Controllers
                 sqlCommand.Parameters.AddWithValue("@planet", world.planet_id);
                 sqlCommand.Parameters.AddWithValue("@name", world.name);
                 sqlCommand.Parameters.AddWithValue("@time", DateTime.Now);
-                sqlCommand.ExecuteNonQuery();
+                await sqlCommand.ExecuteNonQueryAsync();
                 for(int i = 0; i <world.layers.Count; i++)
                 {
                     layer_id = IdGenerator.GenerateID();
@@ -47,7 +47,7 @@ namespace WorldStorage.Controllers
                     sqlCommand.Parameters.AddWithValue("@world_id", id);
                     sqlCommand.Parameters.AddWithValue("@color", world.layers[i].color_id);
                     sqlCommand.Parameters.AddWithValue("@size", world.layers[i].size);
-                    sqlCommand.ExecuteNonQuery();
+                    await sqlCommand.ExecuteNonQueryAsync();
 
                     //Insert points for layer
                     if (world.layers[i].x.Count > 0)
@@ -64,7 +64,7 @@ namespace WorldStorage.Controllers
                         }
                         query += ";";
                         sqlCommand = new SqlCommand(query, connection);
-                        sqlCommand.ExecuteNonQuery();
+                        await sqlCommand.ExecuteNonQueryAsync();
                     }
 
                     //Insert sprites for layer
@@ -86,7 +86,7 @@ namespace WorldStorage.Controllers
                         }
                         query += ";";
                         sqlCommand = new SqlCommand(query, connection);
-                        sqlCommand.ExecuteNonQuery();
+                        await sqlCommand.ExecuteNonQueryAsync();
                     }
                 }
 
@@ -115,7 +115,7 @@ namespace WorldStorage.Controllers
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@offset", offset);
                 sqlCommand.Parameters.AddWithValue("@ammount", ammount);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 while (reader.Read())
                 {
                     id = (string)reader["world_id"];
@@ -134,6 +134,7 @@ namespace WorldStorage.Controllers
         }
 
         [HttpGet]
+        [IgnoreAntiforgeryToken]
         public async Task<World> GetAsync(string id)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
@@ -147,7 +148,7 @@ namespace WorldStorage.Controllers
                 string query = "SELECT w.name, w.planet_id FROM [Worlds] as w WHERE w.world_id LIKE @id;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 if(reader.Read())
                 {
                     res.name = (string)reader["name"];
@@ -158,7 +159,7 @@ namespace WorldStorage.Controllers
                 query = "SELECT l.layer_id, l.color, l.size, c.r, c.g, c.b, c.a FROM [Layers] as l INNER JOIN [Colors] as c ON l.color = c.color_id WHERE l.world_id LIKE @id ORDER BY l.layer_index ASC;";
                 sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
-                reader = sqlCommand.ExecuteReader();
+                reader = await sqlCommand.ExecuteReaderAsync();
                 res.layers = new List<Layer>();
                 Layer l;
                 Sprite s;
@@ -185,7 +186,7 @@ namespace WorldStorage.Controllers
                     sqlCommand.Parameters.AddWithValue("@id", layer_ids[i]);
                     res.layers[i].x = new List<float>();
                     res.layers[i].y = new List<float>();
-                    reader = sqlCommand.ExecuteReader();
+                    reader = await sqlCommand.ExecuteReaderAsync();
                     while (reader.Read())
                     {
                         res.layers[i].x.Add(Convert.ToSingle((double)reader["x"]));
@@ -201,7 +202,7 @@ namespace WorldStorage.Controllers
                     sqlCommand = new SqlCommand(query, connection);
                     sqlCommand.Parameters.AddWithValue("@id", layer_ids[i]);
                     res.layers[i].sprites = new List<Sprite>();
-                    reader = sqlCommand.ExecuteReader();
+                    reader = await sqlCommand.ExecuteReaderAsync();
                     while (reader.Read())
                     {
                         s = new Sprite();
@@ -237,12 +238,56 @@ namespace WorldStorage.Controllers
                 await connection.OpenAsync();
                 string query = "SELECT COUNT(w.world_id) FROM [Worlds] as w;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 if (reader.Read())
                 {
                     res = reader.GetInt32(0);
                 }
                 reader.Close();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+        }
+
+        [HttpDelete]
+        public async Task<int> DeleteAsync(string id)
+        {   //TODO: extend for all related tables
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                await connection.OpenAsync();
+                string query = "DELETE FROM [Points] WHERE layer_id IN (SELECT l.layer_id FROM [Layers] AS l WHERE l.world_id = @id);";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                int res = await sqlCommand.ExecuteNonQueryAsync();
+                if(res != 0)
+                {
+                    query = "DELETE FROM [Sprites] WHERE layer_id IN (SELECT l.layer_id FROM [Layers] AS l WHERE l.world_id = @id);";
+                    sqlCommand = new SqlCommand(query, connection);
+                    sqlCommand.Parameters.AddWithValue("@id", id);
+                    res = await sqlCommand.ExecuteNonQueryAsync();
+                    if(res != 0)
+                    {
+                        query = "DELETE FROM [Layers] WHERE world_id = @id;";
+                        sqlCommand = new SqlCommand(query, connection);
+                        sqlCommand.Parameters.AddWithValue("@id", id);
+                        res = await sqlCommand.ExecuteNonQueryAsync();
+                        if(res != 0)
+                        {
+                            query = "DELETE FROM [Worlds] WHERE world_id = @id;";
+                            sqlCommand = new SqlCommand(query, connection);
+                            sqlCommand.Parameters.AddWithValue("@id", id);
+                            res = await sqlCommand.ExecuteNonQueryAsync();
+                        }
+                    }
+                }
                 connection.Close();
                 return res;
             }

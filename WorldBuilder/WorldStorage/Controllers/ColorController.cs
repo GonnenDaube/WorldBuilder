@@ -29,7 +29,7 @@ namespace WorldStorage.Controllers
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@offset", offset);
                 sqlCommand.Parameters.AddWithValue("@ammount", ammount);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 while (reader.Read())
                 {
                     id = reader.GetString(0);
@@ -62,7 +62,7 @@ namespace WorldStorage.Controllers
                 await connection.OpenAsync();
                 string query = "SELECT COUNT(c.color_id) FROM [Colors] as c;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 if (reader.Read())
                 {
                     res = reader.GetInt32(0);
@@ -95,7 +95,7 @@ namespace WorldStorage.Controllers
                 sqlCommand.Parameters.AddWithValue("@b", b);
                 sqlCommand.Parameters.AddWithValue("@a", a);
                 sqlCommand.Parameters.AddWithValue("@time", DateTime.Now);
-                int res = sqlCommand.ExecuteNonQuery();
+                int res = await sqlCommand.ExecuteNonQueryAsync();
                 connection.Close();
                 return res;
             }
@@ -118,7 +118,7 @@ namespace WorldStorage.Controllers
                 string query = "DELETE FROM [Colors] WHERE color_id = @id;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
-                int res = sqlCommand.ExecuteNonQuery();
+                int res = await sqlCommand.ExecuteNonQueryAsync();
                 connection.Close();
                 return res;
             }
