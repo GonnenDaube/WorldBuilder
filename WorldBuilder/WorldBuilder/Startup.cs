@@ -33,7 +33,7 @@ namespace WorldBuilder
                 options.Cookie.HttpOnly = true;
             });
 
-            services.Configure<FormOptions>(x => x.KeyLengthLimit = 100 * 1024);//100 KB limit
+            services.Configure<FormOptions>(x => x.KeyLengthLimit = 1000 * 1024);//1 MB limit
 
             services.AddMvc(options =>
             {

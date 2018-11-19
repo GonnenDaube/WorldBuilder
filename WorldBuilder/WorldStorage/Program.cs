@@ -20,6 +20,7 @@ namespace WorldStorage
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseUrls("http://localhost:8080/")
                 .Build();
     }
 }

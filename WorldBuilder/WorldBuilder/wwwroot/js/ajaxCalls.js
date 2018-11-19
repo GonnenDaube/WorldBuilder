@@ -1,5 +1,5 @@
 ﻿var siteURL = 'http://localhost:50411/';
-var apiURL = 'http://localhost:50223/WorldApi/';
+var apiURL = 'http://localhost:50223/api/';
 
 
 //   static variables   //

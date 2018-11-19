@@ -13,7 +13,7 @@ using WorldStorage.Code;
 namespace WorldStorage.Controllers
 {
     [Produces("application/json")]
-    [Route("WorldApi/Sprite")]
+    [Route("api/[controller]")]
     public class SpriteController : Controller
     {
         [HttpGet]

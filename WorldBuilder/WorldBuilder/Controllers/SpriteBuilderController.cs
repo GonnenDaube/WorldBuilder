@@ -30,7 +30,8 @@ namespace WorldBuilder.Controllers
         }
 
         [HttpGet]
-        [RequestSizeLimit(100 * 1024)]
+        [RequestSizeLimit(1000 * 1024)]//1 MB request limit
+        
         public async Task<ActionResult> _GetSpriteSources(string value)
         {
             

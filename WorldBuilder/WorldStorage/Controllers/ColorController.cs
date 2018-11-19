@@ -10,7 +10,7 @@ using WorldStorage.Code;
 namespace WorldStorage.Controllers
 {
     [Produces("application/json")]
-    [Route("WorldApi/Color")]
+    [Route("api/[controller]")]
     public class ColorController : Controller
     {
         [HttpGet]

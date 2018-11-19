@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WorldBuilder.Code;
@@ -11,11 +12,11 @@ using WorldStorage.Code;
 namespace WorldStorage.Controllers
 {
     [Produces("application/json")]
-    [Route("api/World")]
+    [Route("api/[controller]")]
     public class WorldController : Controller
     {
 
-        [HttpPost]
+        [HttpPost, Authorize]
         public async Task<string> PostAsync(World world)
         {
             try
@@ -100,7 +101,7 @@ namespace WorldStorage.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<List<Tuple<string, string>>> GetAsync(int offset, int ammount)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
@@ -133,8 +134,7 @@ namespace WorldStorage.Controllers
             }
         }
 
-        [HttpGet]
-        [IgnoreAntiforgeryToken]
+        [HttpGet, Authorize]
         public async Task<World> GetAsync(string id)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
@@ -226,7 +226,7 @@ namespace WorldStorage.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<int> GetNumberAsync()
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
@@ -254,7 +254,7 @@ namespace WorldStorage.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize]
         public async Task<int> DeleteAsync(string id)
         {   //TODO: extend for all related tables
             string location = System.IO.Path.GetFullPath(@"..\..\");
