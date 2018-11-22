@@ -1,0 +1,44 @@
+﻿<div id="newNetworkModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Create a new network</h4>
+            </div>
+            <div class="modal-body">
+                <section data-name="network-name">
+                    <p class="col-lg-10 col-md-10 pull-left horizontal-center">
+                        Network name:
+                    </p>
+                    <input type="text" data-target="net-name" class="text-field dark horizontal-center col-lg-10 col-md-10" />
+                </section>
+                <section data-name="hidden-layer-count" class="margin-top-30">
+                    <p class="col-lg-10 col-md-10 pull-left horizontal-center">
+                        Hidden Layer Count:
+                        <span id="hidden-layer-count">0</span>
+                    </p>
+                    <div class="slider col-md-10 col-lg-10 horizontal-center" data-target="#hidden-layer-count">
+                        <div class="bar"></div>
+                        <div class="handle" style="left:0%"></div>
+                        <input type="range" min="0" max="5" class="hidden" value="0" />
+                    </div>
+                </section>
+                <section data-name="hidden-layer-length">
+                    <p class="col-lg-10 col-md-10 pull-left horizontal-center">
+                        Hidden Layer Length:
+                        <span id="hidden-layer-length">0</span>
+                    </p>
+                    <div class="slider col-md-10 col-lg-10 horizontal-center" data-target="#hidden-layer-length">
+                        <div class="bar"></div>
+                        <div class="handle" style="left:0%"></div>
+                        <input type="range" min="0" max="20" class="hidden" value="0" />
+                    </div>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button danger button-info" data-dismiss="modal">Close</button>
+                <button type="button" class="button button-info" data-trigger="create-new-network">Create</button>
+            </div>
+        </div>
+    </div>
+</div>

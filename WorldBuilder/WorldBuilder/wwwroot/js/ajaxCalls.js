@@ -280,3 +280,148 @@ function postWorld(world) {
         }
     });
 }
+
+function postMagic(data, image, name) {
+    let jsonData = JSON.stringify(data);
+    $.ajax({
+        url: siteURL + 'MagicBuilder/_PostMagicType',
+        type: 'POST',
+        data: {
+            name: name,
+            image: image,
+            data: jsonData
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                window.location = window.location;
+            }
+        },
+        error: function (response) {
+
+        }
+    });
+}
+
+function getMagicTypes(offset, ammount, onsuccess) {
+    $.ajax({
+        url: siteURL + 'MagicBuilder/_GetMagicTypes',
+        type: 'GET',
+        data: {
+            offset: offset,
+            ammount: ammount
+        },
+        datatype: 'json',
+        success: function (response) {
+            awaitingGetMagicTypeResult = false;
+            onsuccess(response);
+        },
+        error: function (response) {
+            awaitingGetMagicTypeResult = false;
+        }
+    });
+}
+
+function getMagicTypeNumber() {
+    $.ajax({
+        url: siteURL + 'MagicBuilder/_GetMagicTypeNumber',
+        type: 'GET',
+        datatype: 'json',
+        success: function (response) {
+            magicTypeMaxNumber = response;
+        },
+        error: function (response) {
+            magicTypeMaxNumber = 0;
+        }
+    });
+}
+
+function deleteMagicType(id) {
+    $.ajax({
+        url: siteURL + 'MagicBuilder/_DeleteMagicType',
+        type: 'DELETE',
+        data: {
+            id: id
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response)
+                window.location = window.location;
+        },
+        error: function (response) {
+
+        }
+    });
+}
+
+function postNetwork(name, hiddenC, hiddenL) {
+    $.ajax({
+        url: siteURL + 'Networks/_PostNetwork',
+        type: 'POST',
+        data: {
+            name: name,
+            hidden_count: hiddenC,
+            hidden_length: hiddenL
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                window.location = window.location;
+            }
+        },
+        error: function (response) {
+
+        }
+    });
+}
+
+function getNetworks(offset, ammount, onsuccess) {
+    $.ajax({
+        url: siteURL + 'Networks/_GetNetworks',
+        type: 'GET',
+        data: {
+            offset: offset,
+            ammount: ammount
+        },
+        datatype: 'json',
+        success: function (response) {
+            awaitingGetNetworksResult = false;
+            onsuccess(response);
+        },
+        error: function (response) {
+            awaitingGetNetworksResult = false;
+        }
+    });
+}
+
+
+function deleteNetwork(id) {
+    $.ajax({
+        url: siteURL + 'Networks/_DeleteNetwork',
+        type: 'DELETE',
+        data: {
+            id: id
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response)
+                window.location = window.location;
+        },
+        error: function (response) {
+        }
+    });
+}
+
+function getNetworkNumber() {
+    $.ajax({
+        url: siteURL + 'Networks/_GetNetworkNumber',
+        type: 'GET',
+        datatype: 'json',
+        success: function (response) {
+            networkMaxNumber = response;
+        },
+        error: function (response) {
+            networkMaxNumber = 0;
+        }
+    });
+}

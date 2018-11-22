@@ -409,6 +409,32 @@ aside{
             top: 0;
         }
 
+
+.server-magic-type {
+    height: 85%;
+    overflow-y: scroll;
+}
+
+.magic-type {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 50px;
+    cursor: pointer;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.server-magic-type .magic-type .cross {
+    transform:translateX(25px) translateY(25px);
+    background-color: transparent;
+    left: 0;
+    top: 0;
+}
+
 .layer-color .color{
     width:20%;
     padding-top:20%;
@@ -436,6 +462,13 @@ aside {
     aside.open {
         left: 300px;
     }
+
+.drawing-surface {
+    background-color: var(--trans-dark-color);
+    box-shadow: rgba(0,0,0,0.5) 0px 2.5px 20px;
+    border:solid 1px var(--dark-color);
+    cursor:pointer;
+}
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {

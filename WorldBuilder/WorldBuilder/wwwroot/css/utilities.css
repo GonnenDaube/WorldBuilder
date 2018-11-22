@@ -136,6 +136,13 @@
         transition:border-bottom ease-in-out 0.1s;
     }
 
+    .text-field.light {
+        color: var(--dark-color);
+        caret-color: var(--dark-color);
+        border-bottom: 1px solid var(--dark-color);
+        transition: border-bottom ease-in-out 0.1s;
+    }
+
     .text-field:active, .text-field:focus{
         border-bottom:1px solid var(--active-color);
         outline:none;

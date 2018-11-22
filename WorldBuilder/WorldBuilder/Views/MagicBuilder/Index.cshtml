@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewData["Title"] = "Magic Builder";
+}
+
+<content class="col-lg-6 col-md-6 horizontal-center margin-top-100">
+    <div class="col-lg-12 col-md-12">
+        <canvas class="drawing-surface">
+            Canvas is not supported on your browser
+        </canvas>
+    </div>
+    <div class="col-lg-12 col-md-12 margin-top-30">
+        <div class="col-lg-9 col-md-9 horizontal-center">
+            <label class="font-18">Magic Name:</label>
+            <input type="text" class="text-field light font-18" data-target="magic-name" />
+        </div>
+        <div class="col-lg-10 col-md-10 horizontal-center margin-top-30">
+            <button class="btn-default primary horizontal-center pos-absolute" data-target="submit-magic">Upload</button>
+        </div>
+    </div>
+</content>
+
+<aside>
+    <div data-target="magic-types" data-remove class="server-magic-type col-lg-12 col-md-12 margin-top-100 horizontal-center">
+
+    </div>
+</aside>
+

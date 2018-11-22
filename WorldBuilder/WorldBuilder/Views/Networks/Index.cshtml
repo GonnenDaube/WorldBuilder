@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewData["Title"] = "Networks";
+}
+
+<div class="pull-right col-lg-12 col-md-12 button-group margin-top-100">
+    <button type="button" class="button" data-toggle="modal" data-target="#newNetworkModal">
+        <i class="fas fa-folder-plus"></i>
+    </button>
+</div>
+
+<content data-target="networks" class="col-md-12 col-lg-12 margin-top-30 scroll-y" style="height:650px; clip-path: inset(0 0 0 0)">
+
+</content>
+
+@Html.Partial("_NewNetworkModal")
+

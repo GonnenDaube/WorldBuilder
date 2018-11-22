@@ -16,7 +16,7 @@ namespace WorldStorage.Controllers
     public class WorldController : Controller
     {
 
-        [HttpPost, Authorize]
+        [HttpPost]
         public async Task<string> PostAsync(World world)
         {
             try
