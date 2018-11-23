@@ -2,6 +2,54 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v2.0": {
+      "AForge/2.2.5": {
+        "type": "package",
+        "compile": {
+          "lib/AForge.dll": {}
+        },
+        "runtime": {
+          "lib/AForge.dll": {}
+        }
+      },
+      "AForge.Genetic/2.2.5": {
+        "type": "package",
+        "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Math": "2.2.5"
+        },
+        "compile": {
+          "lib/AForge.Genetic.dll": {}
+        },
+        "runtime": {
+          "lib/AForge.Genetic.dll": {}
+        }
+      },
+      "AForge.Math/2.2.5": {
+        "type": "package",
+        "dependencies": {
+          "AForge": "2.2.5"
+        },
+        "compile": {
+          "lib/AForge.Math.dll": {}
+        },
+        "runtime": {
+          "lib/AForge.Math.dll": {}
+        }
+      },
+      "AForge.Neuro/2.2.5": {
+        "type": "package",
+        "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Genetic": "2.2.5",
+          "AForge.Math": "2.2.5"
+        },
+        "compile": {
+          "lib/AForge.Neuro.dll": {}
+        },
+        "runtime": {
+          "lib/AForge.Neuro.dll": {}
+        }
+      },
       "Libuv/1.10.0": {
         "type": "package",
         "dependencies": {
@@ -5033,6 +5081,10 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v2.0",
         "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Genetic": "2.2.5",
+          "AForge.Math": "2.2.5",
+          "AForge.Neuro": "2.2.5",
           "Microsoft.AspNetCore.All": "2.0.9",
           "Microsoft.NETCore.App": "2.0.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.3"
@@ -5047,6 +5099,54 @@
     }
   },
   "libraries": {
+    "AForge/2.2.5": {
+      "sha512": "YJ+8dP3DEwmsPJ/I2P9ggWA6br+ozFl81TCJpVeg1c4px4mh5BftmuO9gNsciDD9hGgiFCnBoedJk9GaYsZHZg==",
+      "type": "package",
+      "path": "aforge/2.2.5",
+      "files": [
+        ".signature.p7s",
+        "aforge.2.2.5.nupkg.sha512",
+        "aforge.nuspec",
+        "lib/AForge.dll",
+        "lib/AForge.xml"
+      ]
+    },
+    "AForge.Genetic/2.2.5": {
+      "sha512": "p4YnuzrE06VRrRiuYFEgwG99gGEKokKAQzsu5ujDBgLA0itJAz3qWZjD7TIysyDQvtykVT6uBbKtoKt+MMlVXw==",
+      "type": "package",
+      "path": "aforge.genetic/2.2.5",
+      "files": [
+        ".signature.p7s",
+        "aforge.genetic.2.2.5.nupkg.sha512",
+        "aforge.genetic.nuspec",
+        "lib/AForge.Genetic.dll",
+        "lib/AForge.Genetic.xml"
+      ]
+    },
+    "AForge.Math/2.2.5": {
+      "sha512": "in3TBcuONn8koNpEI7PSQP4hB/NVPU7isT6y9E4tEHQ732PgFrmbhSsY/5K6HBLWocBK0AlpUPUCsx2NKHT1Mw==",
+      "type": "package",
+      "path": "aforge.math/2.2.5",
+      "files": [
+        ".signature.p7s",
+        "aforge.math.2.2.5.nupkg.sha512",
+        "aforge.math.nuspec",
+        "lib/AForge.Math.dll",
+        "lib/AForge.Math.xml"
+      ]
+    },
+    "AForge.Neuro/2.2.5": {
+      "sha512": "7CIEyysnzgSMQY9B/ONXUQyNrHqaTuScWpC9NZIz3vYL731spv26/2hsJr0Di7wdmV7FsuWqQHJglhbYB+FI4Q==",
+      "type": "package",
+      "path": "aforge.neuro/2.2.5",
+      "files": [
+        ".signature.p7s",
+        "aforge.neuro.2.2.5.nupkg.sha512",
+        "aforge.neuro.nuspec",
+        "lib/AForge.Neuro.dll",
+        "lib/AForge.Neuro.xml"
+      ]
+    },
     "Libuv/1.10.0": {
       "sha512": "GsCf4q+eyaI49rCPlgYxdxa1SQCysXFFdSJWdstrwxytg4+VPYLYrXD4AT2rjHVJ+UF7SSWX9CapWEYaU4ejVQ==",
       "type": "package",
@@ -13354,5 +13454,47 @@
         "warn": true
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'AForge 2.2.5' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "AForge",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v2.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'AForge.Genetic 2.2.5' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "AForge.Genetic",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v2.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'AForge.Math 2.2.5' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "AForge.Math",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v2.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'AForge.Neuro 2.2.5' was restored using '.NETFramework,Version=v4.6.1' instead of the project target framework '.NETCoreApp,Version=v2.0'. This package may not be fully compatible with your project.",
+      "libraryId": "AForge.Neuro",
+      "targetGraphs": [
+        ".NETCoreApp,Version=v2.0"
+      ]
+    }
+  ]
 }

@@ -452,3 +452,21 @@ function getNetworkNumber() {
         }
     });
 }
+
+function trainNetwork(id) {
+    $.ajax({
+        url: siteURL + 'NetworkTrainer/_TrainNetwork',
+        type: 'PUT',
+        data: {
+            id: id
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                window.location = window.location;
+            }
+        },
+        error: function (response) {
+        }
+    });
+}

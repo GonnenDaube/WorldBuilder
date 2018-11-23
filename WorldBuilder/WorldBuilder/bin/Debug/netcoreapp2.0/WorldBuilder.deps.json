@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "98455629b0cc53a573bcd94e5b62725a907492c6"
+    "signature": "00c504519f02ad7fce49e701e22e2b77bca72275"
   },
   "compilationOptions": {
     "defines": [
@@ -33,6 +33,50 @@
         },
         "compile": {
           "WorldBuilder.dll": {}
+        }
+      },
+      "AForge/2.2.5": {
+        "runtime": {
+          "lib/AForge.dll": {}
+        },
+        "compile": {
+          "lib/AForge.dll": {}
+        }
+      },
+      "AForge.Genetic/2.2.5": {
+        "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Math": "2.2.5"
+        },
+        "runtime": {
+          "lib/AForge.Genetic.dll": {}
+        },
+        "compile": {
+          "lib/AForge.Genetic.dll": {}
+        }
+      },
+      "AForge.Math/2.2.5": {
+        "dependencies": {
+          "AForge": "2.2.5"
+        },
+        "runtime": {
+          "lib/AForge.Math.dll": {}
+        },
+        "compile": {
+          "lib/AForge.Math.dll": {}
+        }
+      },
+      "AForge.Neuro/2.2.5": {
+        "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Genetic": "2.2.5",
+          "AForge.Math": "2.2.5"
+        },
+        "runtime": {
+          "lib/AForge.Neuro.dll": {}
+        },
+        "compile": {
+          "lib/AForge.Neuro.dll": {}
         }
       },
       "Libuv/1.10.0": {
@@ -4056,6 +4100,10 @@
       },
       "WorldStorage/1.0.0": {
         "dependencies": {
+          "AForge": "2.2.5",
+          "AForge.Genetic": "2.2.5",
+          "AForge.Math": "2.2.5",
+          "AForge.Neuro": "2.2.5",
           "Microsoft.AspNetCore.All": "2.0.9",
           "Microsoft.NETCore.App": "2.0.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.4"
@@ -4250,6 +4298,34 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "AForge/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YJ+8dP3DEwmsPJ/I2P9ggWA6br+ozFl81TCJpVeg1c4px4mh5BftmuO9gNsciDD9hGgiFCnBoedJk9GaYsZHZg==",
+      "path": "aforge/2.2.5",
+      "hashPath": "aforge.2.2.5.nupkg.sha512"
+    },
+    "AForge.Genetic/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-p4YnuzrE06VRrRiuYFEgwG99gGEKokKAQzsu5ujDBgLA0itJAz3qWZjD7TIysyDQvtykVT6uBbKtoKt+MMlVXw==",
+      "path": "aforge.genetic/2.2.5",
+      "hashPath": "aforge.genetic.2.2.5.nupkg.sha512"
+    },
+    "AForge.Math/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-in3TBcuONn8koNpEI7PSQP4hB/NVPU7isT6y9E4tEHQ732PgFrmbhSsY/5K6HBLWocBK0AlpUPUCsx2NKHT1Mw==",
+      "path": "aforge.math/2.2.5",
+      "hashPath": "aforge.math.2.2.5.nupkg.sha512"
+    },
+    "AForge.Neuro/2.2.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7CIEyysnzgSMQY9B/ONXUQyNrHqaTuScWpC9NZIz3vYL731spv26/2hsJr0Di7wdmV7FsuWqQHJglhbYB+FI4Q==",
+      "path": "aforge.neuro/2.2.5",
+      "hashPath": "aforge.neuro.2.2.5.nupkg.sha512"
     },
     "Libuv/1.10.0": {
       "type": "package",

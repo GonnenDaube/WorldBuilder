@@ -38,6 +38,11 @@ $(document).ready(function () {
                 }
         }
     });
+
+    $(document).on('click', '[data-trigger="train-net"]', function () {
+        let id = $('[data-value="net-id"]').val();
+        trainNetwork(id);
+    });
 });
 
 function loadNetworksToContent(response) {

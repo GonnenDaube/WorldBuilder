@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WorldStorage.Code;
 
 namespace WorldStorage.Controllers
@@ -48,6 +49,33 @@ namespace WorldStorage.Controllers
             {
                 Console.WriteLine(e.Message);
                 return null;
+            }
+        }
+
+        public async Task<bool> UpToDate(DateTime date)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                DateTime res = DateTime.Now;
+                await connection.OpenAsync();
+                string query = "SELECT MAX(m.create_time) FROM [MagicTypes] as m;";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                if (reader.Read())
+                {
+                    res = reader.GetDateTime(0);
+                }
+                reader.Close();
+                connection.Close();
+                return res <= date;//if no magic type was added after train date, network is up to date
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
             }
         }
 
@@ -128,6 +156,42 @@ namespace WorldStorage.Controllers
             {
                 Console.WriteLine(e.Message);
                 return 0;
+            }
+        }
+
+        public async Task<List<double[]>> GetDataByTypeAsync(string type)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                List<double[]> res = new List<double[]>();
+                List<Point> p;
+                List<double> data;
+                await connection.OpenAsync();
+                string query = "SELECT m.data FROM [Magics] as m WHERE m.type = @type";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@type", type);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    data = new List<double>();
+                    p = JsonConvert.DeserializeObject<List<Point>>(reader.GetString(0));
+                    foreach(Point point in p)
+                    {
+                        data.Add(point.x);
+                        data.Add(point.y);
+                    }
+                    res.Add(data.ToArray());
+                }
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
             }
         }
 
