@@ -106,6 +106,12 @@ $(document).ready(function () {
         $('.slider .handle').attr('style', 'left:0%');
     })
 
+    $(document).on('click', '[data-remove="world"]', function () {
+        let card = $(this).parent().closest('.card');
+        let id = card.attr('data-world-id');
+        deleteWorld(id);
+    });
+
     if (window.location.pathname.includes('/ColorPalette') ||
         window.location.pathname.includes('/WorldBuilder')) {
         //Color Palette Index || World Builder Index

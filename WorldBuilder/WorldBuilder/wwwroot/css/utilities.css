@@ -182,3 +182,11 @@ a.danger:focus, a.danger:active, a.danger:hover{
     float:right;
     margin-right:20px;
 }
+
+.active-text{
+    color:var(--active-color);
+}
+
+.count{
+    color:var(--light-color);
+}

@@ -303,6 +303,33 @@ function postMagic(data, image, name) {
     });
 }
 
+function postTrainData(data, m_id) {
+    let jsonData = JSON.stringify(data);
+    $.ajax({
+        url: siteURL + 'MagicBuilder/_PostTrainData',
+        type: 'POST',
+        data: {
+            data: jsonData,
+            magic_id: m_id
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                let count = $('[data-magic-id="' + m_id + '"] .count').text();
+                count = Number(count.substring(1, count.indexOf(')')));
+                $('[data-magic-id="' + m_id + '"] .count').text('(' + (count + 1) + ')');
+                $('[data-target="success"]').show(500);
+                setTimeout(function () {
+                    $('[data-target="success"]').hide(500);
+                }, 500);
+            }
+        },
+        error: function (response) {
+
+        }
+    });
+}
+
 function getMagicTypes(offset, ammount, onsuccess) {
     $.ajax({
         url: siteURL + 'MagicBuilder/_GetMagicTypes',

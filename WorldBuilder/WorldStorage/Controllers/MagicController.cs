@@ -15,17 +15,18 @@ namespace WorldStorage.Controllers
     {
 
         [HttpGet]
-        public async Task<List<Tuple<string, string, string, string>>> GetAsync(int offset, int ammount)
+        public async Task<List<Tuple<string, string, string, string, int>>> GetAsync(int offset, int ammount)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
             SqlConnection connection = new SqlConnection(connectionString);
             try
             {
-                List<Tuple<string, string, string, string>> res = new List<Tuple<string, string, string, string>>();
+                List<Tuple<string, string, string, string, int>> res = new List<Tuple<string, string, string, string, int>>();
                 string id, name, image, baseline;
+                int count;
                 await connection.OpenAsync();
-                string query = "SELECT m.magic_type, m.name, m.image, m.baseline FROM [MagicTypes] as m ORDER BY m.create_time DESC OFFSET @offset ROWS FETCH NEXT @ammount ROWS ONLY;";
+                string query = "SELECT m.magic_type, m.name, m.image, m.baseline, (SELECT COUNT(md.magic_id) FROM [Magics] as md WHERE md.type = m.magic_type) FROM [MagicTypes] as m ORDER BY m.create_time DESC OFFSET @offset ROWS FETCH NEXT @ammount ROWS ONLY;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@offset", offset);
                 sqlCommand.Parameters.AddWithValue("@ammount", ammount);
@@ -36,7 +37,8 @@ namespace WorldStorage.Controllers
                     name = reader.GetString(1);
                     image = reader.GetString(2);
                     baseline = reader.GetString(3);
-                    res.Add(new Tuple<string, string, string, string>(id, name, image, baseline));
+                    count = reader.GetInt32(4);
+                    res.Add(new Tuple<string, string, string, string, int>(id, name, image, baseline, count));
                 }
                 reader.Close();
                 connection.Close();
@@ -93,6 +95,31 @@ namespace WorldStorage.Controllers
                 sqlCommand.Parameters.AddWithValue("@baseline", baseline);
                 sqlCommand.Parameters.AddWithValue("@image", image);
                 sqlCommand.Parameters.AddWithValue("@time", DateTime.Now);
+                int res = await sqlCommand.ExecuteNonQueryAsync();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+        }
+
+        [HttpPost]
+        public async Task<int> PostAsync([FromBody]string data, string id)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                await connection.OpenAsync();
+                string query = "INSERT INTO [Magics] (magic_id, type, data) VALUES (@id, @type, @data);";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", IdGenerator.GenerateID());
+                sqlCommand.Parameters.AddWithValue("@type", id);
+                sqlCommand.Parameters.AddWithValue("@data", data);
                 int res = await sqlCommand.ExecuteNonQueryAsync();
                 connection.Close();
                 return res;

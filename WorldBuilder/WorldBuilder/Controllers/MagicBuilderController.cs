@@ -14,6 +14,11 @@ namespace WorldBuilder.Controllers
             return View();
         }
 
+        public IActionResult Train()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<ActionResult> _PostMagicType(string name, string image, string data)
         {
@@ -21,10 +26,17 @@ namespace WorldBuilder.Controllers
             return Json(res);
         }
 
+        [HttpPost]
+        public async Task<ActionResult> _PostTrainData(string data, string magic_id)
+        {
+            int res = await new MagicController().PostAsync(data, magic_id);
+            return Json(res);
+        }
+
         [HttpGet]
         public async Task<ActionResult> _GetMagicTypes(int offset, int ammount)
         {
-            List<Tuple<string, string, string, string>> res = await new MagicController().GetAsync(offset, ammount);
+            List<Tuple<string, string, string, string, int>> res = await new MagicController().GetAsync(offset, ammount);
             return Json(res);
         }
 

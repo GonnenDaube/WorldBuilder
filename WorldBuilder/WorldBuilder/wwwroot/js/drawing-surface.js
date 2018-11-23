@@ -7,6 +7,8 @@ var record = false;
 var awaitingGetMagicTypeResult = false;
 var magicTypeMaxNumber = undefined;
 
+var currentTrainMagic = undefined;
+
 $(document).ready(function () {
     if (window.location.pathname.includes('/MagicBuilder')) {
         canvas = $('canvas');
@@ -74,6 +76,32 @@ $(document).ready(function () {
         var name = $('[data-target="magic-name"]').val();
         postMagic(data, image, name);
     });
+
+    if (window.location.pathname.includes('/Train')) {
+        //on Train page
+        $('.backdrop').width(window.innerHeight * 0.5 + 'px');
+        $('.backdrop').height(window.innerHeight * 0.5 + 'px');
+
+
+        $(document).on('click', '.magic-type', function () {
+            currentTrainMagic = $(this).attr('data-magic-id');
+            let src = $(this).attr('style');
+            src = src.substring(src.indexOf('url(') + 'url('.length, src.indexOf(')'));
+            $('.backdrop').attr('src', src);
+        });
+
+        $(document).on('keypress', function (e) {
+            let keycode = e.charCode;
+            if (keycode === 32) {//space key
+                if (currentTrainMagic != undefined && draw_data.length > 10) {
+                    var data = normalize(draw_data);
+                    postTrainData(data, currentTrainMagic);
+                    context.clearRect(0, 0, canvas[0].width, canvas[0].height);
+                    draw_data = [];
+                }
+            }
+        });
+    }
 });
 
 function normalize(raw_data) {
@@ -131,17 +159,15 @@ function average(vec1, vec2) {
 
 function loadMagicTypesToAside(response) {
     if (response != null) {
-        let isDelete = false;
-        if (window.location.pathname.includes('/MagicBuilder')) {
-            isDelete = true;
-        }
+        let isDelete = $('.server-magic-type[data-remove]').length > 0;
         for (let i = 0; i < response.length; i++) {
             $('.server-magic-type').append(
                 '<div class="magic-type" data-magic-id="'
                 + response[i].item1 + '" style="background-image:url('
                 + response[i].item3 + ')" data-image-name="'
                 + response[i].item2 + '" data-baseline="'
-                + response[i].item4 + '>' + (isDelete ? ' <div class= "cross"> <div></div> <div></div> </div>' : '') + '</div> ');
+                + response[i].item4 + '>' + (isDelete ? ' <div class= "cross"> <div></div> <div></div> </div>' : '<p class="count">('
+                    + response[i].item5 + ')</p>') + '</div>');
         }
     }
 }

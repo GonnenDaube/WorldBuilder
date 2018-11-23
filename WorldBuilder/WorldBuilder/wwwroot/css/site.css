@@ -435,6 +435,11 @@ aside{
     top: 0;
 }
 
+.backdrop{
+    position:absolute;
+    border:solid 1px var(--dark-color);
+}
+
 .layer-color .color{
     width:20%;
     padding-top:20%;

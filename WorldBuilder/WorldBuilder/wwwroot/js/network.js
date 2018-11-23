@@ -15,6 +15,12 @@ $(document).ready(function () {
         postNetwork(name, hidden_count, hidden_length);
     });
 
+    $(document).on('click', '[data-remove="network"]', function () {
+        let card = $(this).parent().closest('.card');
+        let id = card.attr('data-network-id');
+        deleteNetwork(id);
+    });
+
     $(document).on('click', '#newNetworkModal [data-dismiss="modal"]', function () {
         $('[data-target="net-name"]').val('');
         $('#hidden-layer-count').text(0);
