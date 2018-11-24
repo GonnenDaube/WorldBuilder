@@ -61,7 +61,7 @@ $(document).ready(function () {
                 y: posY
             });
             context.beginPath();
-            context.moveTo(draw_data[0].x, draw_data[1]);
+            context.moveTo(draw_data[0].x, draw_data[0].y);
             for (let i = 1; i < draw_data.length; i++) {
                 context.lineTo(draw_data[i].x, draw_data[i].y);
             }
@@ -105,7 +105,7 @@ $(document).ready(function () {
 });
 
 function normalize(raw_data) {
-    let n = 50;
+    let n = 30;
     let min = raw_data[0].x, max = raw_data[0].x;
     let out = [];
 

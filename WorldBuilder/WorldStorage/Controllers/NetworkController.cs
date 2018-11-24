@@ -106,6 +106,36 @@ namespace WorldStorage.Controllers
             }
         }
 
+        [HttpDelete, Authorize]
+        public async Task<int> DeleteAsync(string id)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                int res = 0;
+                await connection.OpenAsync();
+                string query = "DELETE FROM [NetworkMagics] WHERE network_id = @id";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                await sqlCommand.ExecuteNonQueryAsync();
+
+                query = "DELETE FROM [Networks] WHERE network_id = @id;";
+                sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                res = await sqlCommand.ExecuteNonQueryAsync();
+                
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+        }
+
         [HttpPut]
         public async Task<int> TrainNetwork(string id)
         {
@@ -157,12 +187,12 @@ namespace WorldStorage.Controllers
                         n_Count.Add(hidden_length);
                     }
                     n_Count.Add(output[0].Length);//output neuron length
-                    network = new ActivationNetwork(new SigmoidFunction(), input[0].Length, n_Count.ToArray());
+                    network = new ActivationNetwork(new SigmoidFunction(2.0), input[0].Length, n_Count.ToArray());
                 }
 
 
                 //training proccess
-                await Train(network, input, output);
+                Train(network, input, output);
 
                 //saving proccess
                 MemoryStream ms = new MemoryStream();
@@ -198,33 +228,49 @@ namespace WorldStorage.Controllers
             }
         }
 
-        private async Task Train(ActivationNetwork network, double[][] input, double[][] output)
+        private void Train(ActivationNetwork network, double[][] input, double[][] output)
         {
             BackPropagationLearning teacher = new BackPropagationLearning(network);
 
-            teacher.LearningRate = 0.005f;
-            teacher.Momentum = 0.005f;
+            teacher.LearningRate = 1.0f;
+            
+            double error = Double.MaxValue;
+            double target = 1.0f;
+            int maxIterations = 100000;
 
-            int maxIterations = 2000;
-            int maxUp = 10;
-            double lastErr = 100;
-
-            int countUp = 0;
-            int numIterations = 0;
-            double error;
-
-            do
+            for(int i = 0; i < maxIterations && error > target; i++)
             {
                 error = teacher.RunEpoch(input, output);
+            }
+        }
 
-                //handle stop conditions
-                if (lastErr < error)
-                    countUp++;
-                else
-                    countUp = 0;
-                lastErr = error;
-                numIterations++;
-            } while (countUp < maxUp && numIterations < maxIterations);
+        [HttpGet]
+        public async Task<string> GetNetworkAsync(string id)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                string res = null;
+                await connection.OpenAsync();
+                string query = "SELECT n.data FROM [Networks] as n WHERE n.network_id = @id;";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                if (reader.Read())
+                {
+                    res = reader.GetString(0);
+                }
+                reader.Close();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
     }
 }

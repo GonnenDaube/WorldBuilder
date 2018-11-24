@@ -29,6 +29,13 @@ namespace WorldBuilder.Controllers
         }
 
         [HttpGet]
+        public async Task<ActionResult> _GetNetwork(string id)
+        {
+            string res = await new NetworkController().GetNetworkAsync(id);
+            return Json(res);
+        }
+
+        [HttpGet]
         public async Task<ActionResult> _GetNetworkNumber()
         {
             int res = await new NetworkController().GetNumberAsync();
@@ -38,8 +45,7 @@ namespace WorldBuilder.Controllers
         [HttpDelete]
         public async Task<ActionResult> _DeleteNetwork(string id)
         {
-            //int res = await new NetworkController().DeleteAsync(id);
-            int res = 0;
+            int res = await new NetworkController().DeleteAsync(id);
             return Json(res);
         }
     }
