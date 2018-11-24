@@ -27,7 +27,7 @@ namespace WorldStorage.Controllers
             {
                 List<Tuple<string, string>> res = new List<Tuple<string, string>>();
                 await connection.OpenAsync();
-                string query = "INSERT INTO [Networks] VALUES(@id, @time, @name, 0, @hidden_count, @hidden_length, NULL);";
+                string query = "INSERT INTO [Networks] VALUES(@id, @time, @name, 0, @hidden_count, @hidden_length, NULL, 0);";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", IdGenerator.GenerateID());
                 sqlCommand.Parameters.AddWithValue("@time", DateTime.Now);
@@ -187,12 +187,26 @@ namespace WorldStorage.Controllers
                         n_Count.Add(hidden_length);
                     }
                     n_Count.Add(output[0].Length);//output neuron length
-                    network = new ActivationNetwork(new SigmoidFunction(2.0), input[0].Length, n_Count.ToArray());
+                    network = new ActivationNetwork(new SigmoidFunction(), input[0].Length, n_Count.ToArray());
+                    network.Randomize();
                 }
 
 
                 //training proccess
                 Train(network, input, output);
+
+                //Evaluate proccess
+                int num = 0;
+                float success_rate;
+                double[] op;
+                for(int i = 0; i < input.Length; i++)
+                {
+                    op = network.Compute(input[i]);
+                    if (FindMax(op) == FindMax(output[i]))
+                        num++;
+                }
+                success_rate = (float)num / input.Length;
+
 
                 //saving proccess
                 MemoryStream ms = new MemoryStream();
@@ -201,11 +215,12 @@ namespace WorldStorage.Controllers
 
                 await connection.OpenAsync();
                 int res;
-                query = "UPDATE [Networks] SET train_date = @date, trained = 1, data = @data WHERE network_id = @id;";
+                query = "UPDATE [Networks] SET train_date = @date, trained = 1, data = @data, success_rate = @suc_rate WHERE network_id = @id;";
                 sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
                 sqlCommand.Parameters.AddWithValue("@date", DateTime.Now);
                 sqlCommand.Parameters.AddWithValue("@data", Convert.ToBase64String(netData));
+                sqlCommand.Parameters.AddWithValue("@suc_rate", success_rate);
                 res = await sqlCommand.ExecuteNonQueryAsync();
 
                 query = "DELETE FROM [NetworkMagics] WHERE network_id = @id;";
@@ -228,19 +243,54 @@ namespace WorldStorage.Controllers
             }
         }
 
+        private double[] softmax(double[] input)
+        {
+            double[] output = new double[input.Length];
+            double sum = 0;
+            for(int i = 0; i < input.Length; i++)
+            {
+                output[i] = Math.Exp(input[i]);
+                sum += output[i];
+            }
+            for(int i = 0; i < output.Length; i++)
+            {
+                output[i] /= sum;
+            }
+            return output;
+        }
+
+        private int FindMax(double[] arr)
+        {
+            int max = 0;
+            for(int i = 0; i < arr.Length; i++)
+            {
+                if (arr[max] < arr[i])
+                    max = i;
+            }
+            if (max < 0.5)
+                return -1;
+            return max;
+        }
+
         private void Train(ActivationNetwork network, double[][] input, double[][] output)
         {
+            //TODO: split input to 60% training, 20% validation, 20% test
             BackPropagationLearning teacher = new BackPropagationLearning(network);
 
-            teacher.LearningRate = 1.0f;
+            teacher.LearningRate = 0.1f;
+            teacher.Momentum = 0.0f;
             
             double error = Double.MaxValue;
+            double lastError = error;
             double target = 1.0f;
-            int maxIterations = 100000;
+            double tol = Math.Pow(10, -5);
+            int i = 0;
 
-            for(int i = 0; i < maxIterations && error > target; i++)
+            while (error > target && i < 1000)
             {
                 error = teacher.RunEpoch(input, output);
+                i++;
+                lastError = error;
             }
         }
 

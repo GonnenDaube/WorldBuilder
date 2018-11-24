@@ -180,8 +180,8 @@ namespace WorldStorage.Controllers
                     p = JsonConvert.DeserializeObject<List<Point>>(reader.GetString(0));
                     foreach(Point point in p)
                     {
-                        data.Add(point.x);
-                        data.Add(point.y);
+                        data.Add(point.x - 0.5);
+                        data.Add(point.y - 0.5);
                     }
                     res.Add(data.ToArray());
                 }
