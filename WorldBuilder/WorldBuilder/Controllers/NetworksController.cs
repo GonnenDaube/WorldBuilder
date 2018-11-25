@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WorldStorage.Code;
 using WorldStorage.Controllers;
 
 namespace WorldBuilder.Controllers
@@ -24,14 +25,14 @@ namespace WorldBuilder.Controllers
         [HttpGet]
         public async Task<ActionResult> _GetNetworks(int offset, int ammount)
         {
-            List<Tuple<string, string>> res = await new NetworkController().GetAsync(offset, ammount);
+            List<Tuple<string, string, double>> res = await new NetworkController().GetAsync(offset, ammount);
             return Json(res);
         }
 
         [HttpGet]
         public async Task<ActionResult> _GetNetwork(string id)
         {
-            string res = await new NetworkController().GetNetworkAsync(id);
+            Network res = await new NetworkController().GetNetworkAsync(id);
             return Json(res);
         }
 

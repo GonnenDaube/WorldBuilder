@@ -4,8 +4,14 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AForge.Neuro;
-using AForge.Neuro.Learning;
+using Encog;
+using Encog.Engine.Network.Activation;
+using Encog.ML.Data;
+using Encog.ML.Data.Basic;
+using Encog.ML.Train;
+using Encog.Neural.Networks;
+using Encog.Neural.Networks.Layers;
+using Encog.Neural.Networks.Training.Propagation.Resilient;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,17 +52,18 @@ namespace WorldStorage.Controllers
         }
 
         [HttpGet, Authorize]
-        public async Task<List<Tuple<string, string>>> GetAsync(int offset, int ammount)
+        public async Task<List<Tuple<string, string, double>>> GetAsync(int offset, int ammount)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
             SqlConnection connection = new SqlConnection(connectionString);
             try
             {
-                List<Tuple<string, string>> res = new List<Tuple<string, string>>();
+                List<Tuple<string, string, double>> res = new List<Tuple<string, string, double>>();
                 string id, name;
+                double suc_rate;
                 await connection.OpenAsync();
-                string query = "SELECT n.network_id, n.name FROM [Networks] as n ORDER BY n.train_date DESC OFFSET @offset ROWS FETCH NEXT @ammount ROWS ONLY;";
+                string query = "SELECT n.network_id, n.name, n.success_rate FROM [Networks] as n ORDER BY n.train_date DESC OFFSET @offset ROWS FETCH NEXT @ammount ROWS ONLY;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@offset", offset);
                 sqlCommand.Parameters.AddWithValue("@ammount", ammount);
@@ -65,7 +72,8 @@ namespace WorldStorage.Controllers
                 {
                     id = (string)reader["network_id"];
                     name = (string)reader["name"];
-                    res.Add(new Tuple<string, string>(id, name));
+                    suc_rate = (double)reader["success_rate"];
+                    res.Add(new Tuple<string, string, double>(id, name, suc_rate));
                 }
                 reader.Close();
                 connection.Close();
@@ -151,7 +159,7 @@ namespace WorldStorage.Controllers
 
                 int hidden_count = 0, hidden_length = 0;
                 bool trained = false;
-                byte[] netData = new byte[0];
+                string netData = "";
                 DateTime trainDate = DateTime.Now;
                 bool upToDate;
 
@@ -165,7 +173,7 @@ namespace WorldStorage.Controllers
                     hidden_count = reader.GetInt32(0);
                     hidden_length = reader.GetInt32(1);
                     trained = reader.GetBoolean(2);
-                    netData = !reader.IsDBNull(3) ? Convert.FromBase64String(reader.GetString(3)) : null;
+                    netData = !reader.IsDBNull(3) ? reader.GetString(3) : "";
                     trainDate = reader.GetDateTime(4);
                 }
                 reader.Close();
@@ -173,45 +181,36 @@ namespace WorldStorage.Controllers
 
                 upToDate = await new MagicController().UpToDate(trainDate);
 
-                ActivationNetwork network;
+                BasicNetwork network;
 
                 if(trained && upToDate)
                 {//if training can be "Added"
-                    Stream stream = new MemoryStream(netData);
-                    network = (ActivationNetwork)Network.Load(stream);
+                    network = LoadNetwork(netData, input[0].Length, output[0].Length, hidden_count, hidden_length);   
                 }
                 else
                 {//if network needs to be recreated
-                    for (int i = 0; i < hidden_count; i++)
-                    {
-                        n_Count.Add(hidden_length);
-                    }
-                    n_Count.Add(output[0].Length);//output neuron length
-                    network = new ActivationNetwork(new SigmoidFunction(), input[0].Length, n_Count.ToArray());
-                    network.Randomize();
+                    network = GenNetwork(input[0].Length, output[0].Length, hidden_count, hidden_length);
                 }
 
 
                 //training proccess
                 Train(network, input, output);
 
-                //Evaluate proccess
+                //Evaluation proccess
                 int num = 0;
                 float success_rate;
-                double[] op;
-                for(int i = 0; i < input.Length; i++)
+                IMLData op;
+                IMLDataSet trainingSet = new BasicMLDataSet(input, output);
+                foreach(IMLDataPair pair in trainingSet)
                 {
-                    op = network.Compute(input[i]);
-                    if (FindMax(op) == FindMax(output[i]))
+                    op = network.Compute(pair.Input);
+                    if (FindMax(op) == FindMax(pair.Ideal))
                         num++;
                 }
                 success_rate = (float)num / input.Length;
 
-
                 //saving proccess
-                MemoryStream ms = new MemoryStream();
-                network.Save(ms);
-                netData = ms.GetBuffer();
+                netData = SaveNetwork(network);
 
                 await connection.OpenAsync();
                 int res;
@@ -219,7 +218,7 @@ namespace WorldStorage.Controllers
                 sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
                 sqlCommand.Parameters.AddWithValue("@date", DateTime.Now);
-                sqlCommand.Parameters.AddWithValue("@data", Convert.ToBase64String(netData));
+                sqlCommand.Parameters.AddWithValue("@data", netData);
                 sqlCommand.Parameters.AddWithValue("@suc_rate", success_rate);
                 res = await sqlCommand.ExecuteNonQueryAsync();
 
@@ -232,6 +231,9 @@ namespace WorldStorage.Controllers
                 sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
                 await sqlCommand.ExecuteNonQueryAsync();
+
+                EncogFramework.Instance.Shutdown();
+
                 connection.Close();
 
                 return res;
@@ -243,78 +245,96 @@ namespace WorldStorage.Controllers
             }
         }
 
-        private double[] softmax(double[] input)
+        private string SaveNetwork(BasicNetwork network)
         {
-            double[] output = new double[input.Length];
-            double sum = 0;
-            for(int i = 0; i < input.Length; i++)
+            double[] data = new double[network.EncodedArrayLength()];
+            network.EncodeToArray(data);
+            List<byte> netData = new List<byte>();
+            foreach (double d in data)
             {
-                output[i] = Math.Exp(input[i]);
-                sum += output[i];
+                netData.AddRange(BitConverter.GetBytes(d));
             }
-            for(int i = 0; i < output.Length; i++)
-            {
-                output[i] /= sum;
-            }
-            return output;
+            return Convert.ToBase64String(netData.ToArray());
         }
 
-        private int FindMax(double[] arr)
+        private BasicNetwork GenNetwork(int input, int output, int h_c, int h_l)
+        {
+            BasicNetwork network = new BasicNetwork();
+            network.AddLayer(new BasicLayer(null, true, input));
+            for (int i = 0; i < h_c; i++)
+            {
+                network.AddLayer(new BasicLayer(new ActivationSigmoid(), true, h_l));
+            }
+            network.AddLayer(new BasicLayer(new ActivationSigmoid(), false, output));
+            network.Structure.FinalizeStructure();
+            network.Reset();
+            return network;
+        }
+
+        private BasicNetwork LoadNetwork(string netData, int input, int output, int h_c, int h_l)
+        {
+            byte[] byteData = Convert.FromBase64String(netData);
+            double[] data = new double[byteData.Length / 8];
+            Buffer.BlockCopy(byteData, 0, data, 0, byteData.Length);
+            BasicNetwork network = GenNetwork(input, output, h_c, h_l);
+            network.DecodeFromArray(data);
+            return network;
+        }
+
+        private int FindMax(IMLData arr)
         {
             int max = 0;
-            for(int i = 0; i < arr.Length; i++)
+            for(int i = 0; i < arr.Count; i++)
             {
                 if (arr[max] < arr[i])
                     max = i;
             }
-            if (max < 0.5)
+            if (max < 0.0)
                 return -1;
             return max;
         }
 
-        private void Train(ActivationNetwork network, double[][] input, double[][] output)
+        private void Train(BasicNetwork network, double[][] input, double[][] output)
         {
-            //TODO: split input to 60% training, 20% validation, 20% test
-            BackPropagationLearning teacher = new BackPropagationLearning(network);
+            IMLDataSet trainingSet = new BasicMLDataSet(input, output);
+            IMLTrain train = new ResilientPropagation(network, trainingSet);
 
-            teacher.LearningRate = 0.1f;
-            teacher.Momentum = 0.0f;
-            
-            double error = Double.MaxValue;
-            double lastError = error;
-            double target = 1.0f;
-            double tol = Math.Pow(10, -5);
-            int i = 0;
+            int epoch = 1;
 
-            while (error > target && i < 1000)
+            do
             {
-                error = teacher.RunEpoch(input, output);
-                i++;
-                lastError = error;
-            }
+                train.Iteration();
+                epoch++;
+            } while (train.Error > 0.01);
+
+            train.FinishTraining();
         }
 
         [HttpGet]
-        public async Task<string> GetNetworkAsync(string id)
+        public async Task<Network> GetNetworkAsync(string id)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
             SqlConnection connection = new SqlConnection(connectionString);
             try
             {
-                string res = null;
+                string data = "";
+                int h_c = 0, h_l = 0, output = 0;
                 await connection.OpenAsync();
-                string query = "SELECT n.data FROM [Networks] as n WHERE n.network_id = @id;";
+                string query = "SELECT n.data, n.hidden_count, n.hidden_length, (SELECT COUNT(nm.magic_type) FROM [NetworkMagics] as nm WHERE nm.network_id = @id) as output FROM [Networks] as n WHERE n.network_id = @id;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
                 SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 if (reader.Read())
                 {
-                    res = reader.GetString(0);
+                    data = reader.GetString(0);
+                    h_c = reader.GetInt32(1);
+                    h_l = reader.GetInt32(2);
+                    output = reader.GetInt32(3);
                 }
                 reader.Close();
                 connection.Close();
-                return res;
+                return new Network(data, h_c, h_l, output);
             }
             catch (Exception e)
             {

@@ -51,7 +51,7 @@ function loadNetworksToContent(response) {
             $('content[data-target="networks"]').append(
                 '<div class="card" data-network-id="'
                 + response[i].item1 + '"><label class="col-lg-6 col-md-6">'
-                + response[i].item2 + '</label><div class="options col-lg-6 col-md-6 float-right"><a href="'
+                + response[i].item2 + ' (' + Math.round(100 * response[i].item3) + '% success rate)</label><div class="options col-lg-6 col-md-6 float-right"><a href="'
                 + ("NetworkTrainer/Train/" + response[i].item1) + '"><i class="font-24 fas fa-dumbbell"></i></a>'
                 + '<a data-remove="network" class="danger" href="javascript:void(0)"><i class="font-24 fas fa-trash"></i></a></div></div>');//TODO: implement remove network
         }
