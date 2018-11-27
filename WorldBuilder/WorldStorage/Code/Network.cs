@@ -10,14 +10,12 @@ namespace WorldStorage.Code
         public string data;
         public int hidden_count;
         public int hidden_length;
-        public int output;
 
-        public Network(string data, int hidden_count, int hidden_length, int output)
+        public Network(string data, int hidden_count, int hidden_length)
         {
             this.data = data;
             this.hidden_count = hidden_count;
             this.hidden_length = hidden_length;
-            this.output = output;
         }
     }
 }

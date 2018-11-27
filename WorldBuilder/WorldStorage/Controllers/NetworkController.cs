@@ -305,7 +305,7 @@ namespace WorldStorage.Controllers
             {
                 train.Iteration();
                 epoch++;
-            } while (train.Error > 0.01);
+            } while (train.Error > 0.05);
 
             train.FinishTraining();
         }
@@ -321,7 +321,7 @@ namespace WorldStorage.Controllers
                 string data = "";
                 int h_c = 0, h_l = 0, output = 0;
                 await connection.OpenAsync();
-                string query = "SELECT n.data, n.hidden_count, n.hidden_length, (SELECT COUNT(nm.magic_type) FROM [NetworkMagics] as nm WHERE nm.network_id = @id) as output FROM [Networks] as n WHERE n.network_id = @id;";
+                string query = "SELECT n.data, n.hidden_count, n.hidden_length as output FROM [Networks] as n WHERE n.network_id = @id;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
                 SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
@@ -330,11 +330,10 @@ namespace WorldStorage.Controllers
                     data = reader.GetString(0);
                     h_c = reader.GetInt32(1);
                     h_l = reader.GetInt32(2);
-                    output = reader.GetInt32(3);
                 }
                 reader.Close();
                 connection.Close();
-                return new Network(data, h_c, h_l, output);
+                return new Network(data, h_c, h_l);
             }
             catch (Exception e)
             {

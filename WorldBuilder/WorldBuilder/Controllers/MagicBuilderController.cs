@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WorldStorage.Code;
 using WorldStorage.Controllers;
 
 namespace WorldBuilder.Controllers
@@ -37,6 +38,13 @@ namespace WorldBuilder.Controllers
         public async Task<ActionResult> _GetMagicTypes(int offset, int ammount)
         {
             List<Tuple<string, string, string, string, int>> res = await new MagicController().GetAsync(offset, ammount);
+            return Json(res);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> _GetMagicMin(string id)
+        {
+            List<Magic> res = await new MagicController().GetByNet(id);
             return Json(res);
         }
 

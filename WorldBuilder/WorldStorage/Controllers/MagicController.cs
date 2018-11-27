@@ -52,6 +52,38 @@ namespace WorldStorage.Controllers
             }
         }
 
+        public async Task<List<Magic>> GetByNet(string net_id){
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                List<Magic> res = new List<Magic>();
+                string id, name, image, baseline;
+                await connection.OpenAsync();
+                string query = "SELECT m.magic_type, m.name, m.image, m.baseline FROM [MagicTypes] as m INNER JOIN [NetworkMagics] as nm ON m.magic_type = nm.magic_type WHERE nm.network_id = @id ORDER BY m.create_time DESC;";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", net_id);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    id = reader.GetString(0);
+                    name = reader.GetString(1);
+                    image = reader.GetString(2);
+                    baseline = reader.GetString(3);
+                    res.Add(new Magic(id, name, baseline, image));
+                }
+                reader.Close();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
         public async Task<bool> UpToDate(DateTime date)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
@@ -90,6 +122,34 @@ namespace WorldStorage.Controllers
                 int res = 0;
                 await connection.OpenAsync();
                 string query = "SELECT COUNT(m.magic_type) FROM [MagicTypes] as m;";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                if (reader.Read())
+                {
+                    res = reader.GetInt32(0);
+                }
+                reader.Close();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+        }
+
+        [HttpGet]
+        public async Task<int> GetSamplesCount()
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                int res = 0;
+                await connection.OpenAsync();
+                string query = "SELECT COUNT(m.magic_id) FROM [Magics] as m;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
                 if (reader.Read())
@@ -159,7 +219,43 @@ namespace WorldStorage.Controllers
             }
         }
 
-        public async Task<List<double[]>> GetDataByTypeAsync(string type)
+        public async Task<List<List<double>>> GetSampleData()
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                List<List<double>> res = new List<List<double>>();
+                List<Point> p;
+                List<double> data;
+                await connection.OpenAsync();
+                string query = "SELECT m.data FROM [Magics] as m INNER JOIN [MagicTypes] as mt ON m.type = mt.magic_type ORDER BY mt.create_time DESC;";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    data = new List<double>();
+                    p = JsonConvert.DeserializeObject<List<Point>>(reader.GetString(0));
+                    foreach(Point point in p)
+                    {
+                        data.Add(point.x);
+                        data.Add(point.y);
+                    }
+
+                    res.Add(data);
+                }
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        public async Task<List<double[]>> GetSampleData(string type)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
@@ -170,7 +266,7 @@ namespace WorldStorage.Controllers
                 List<Point> p;
                 List<double> data;
                 await connection.OpenAsync();
-                string query = "SELECT m.data FROM [Magics] as m WHERE m.type = @type";
+                string query = "SELECT m.data FROM [Magics] as m WHERE m.type = @type;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@type", type);
                 SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
@@ -178,11 +274,12 @@ namespace WorldStorage.Controllers
                 {
                     data = new List<double>();
                     p = JsonConvert.DeserializeObject<List<Point>>(reader.GetString(0));
-                    foreach(Point point in p)
+                    foreach (Point point in p)
                     {
-                        data.Add(point.x - 0.5);
-                        data.Add(point.y - 0.5);
+                        data.Add(point.x);
+                        data.Add(point.y);
                     }
+
                     res.Add(data.ToArray());
                 }
                 connection.Close();
