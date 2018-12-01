@@ -17,26 +17,42 @@ namespace WorldStorage.Controllers
     {
 
         [HttpPost]
-        public async Task<string> PostAsync(World world)
+        public async Task<string> PostAsync(World world, string id = "")
         {
             try
             {
+                bool createWorld = id == "";
                 string location = System.IO.Path.GetFullPath(@"..\..\");
-                string id = IdGenerator.GenerateID();
+                if (createWorld)
+                    id = IdGenerator.GenerateID();
                 string layer_id;
                 string point_id;
                 string sprite_id;
                 string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
                 SqlConnection connection = new SqlConnection(connectionString);
                 await connection.OpenAsync();
-                //Insert world record
-                string query = "INSERT INTO [Worlds] (world_id, planet_id, name, create_time) VALUES (@id, @planet, @name, @time);";
-                SqlCommand sqlCommand = new SqlCommand(query, connection);
-                sqlCommand.Parameters.AddWithValue("@id", id);
-                sqlCommand.Parameters.AddWithValue("@planet", world.planet_id);
-                sqlCommand.Parameters.AddWithValue("@name", world.name);
-                sqlCommand.Parameters.AddWithValue("@time", DateTime.Now);
-                await sqlCommand.ExecuteNonQueryAsync();
+                string query;
+                SqlCommand sqlCommand;
+                if (createWorld)
+                {
+                    //Insert world record
+                    query = "INSERT INTO [Worlds] (world_id, planet_id, name, create_time) VALUES (@id, @planet, @name, @time);";
+                    sqlCommand = new SqlCommand(query, connection);
+                    sqlCommand.Parameters.AddWithValue("@id", id);
+                    sqlCommand.Parameters.AddWithValue("@planet", world.planet_id);
+                    sqlCommand.Parameters.AddWithValue("@name", world.name);
+                    sqlCommand.Parameters.AddWithValue("@time", DateTime.Now);
+                    await sqlCommand.ExecuteNonQueryAsync();
+                }
+                else
+                {
+                    //Update world record
+                    query = "UPDATE [Worlds] SET name = @name WHERE world_id = @id";
+                    sqlCommand = new SqlCommand(query, connection);
+                    sqlCommand.Parameters.AddWithValue("@id", id);
+                    sqlCommand.Parameters.AddWithValue("@name", world.name);
+                    await sqlCommand.ExecuteNonQueryAsync();
+                }
                 for(int i = 0; i <world.layers.Count; i++)
                 {
                     layer_id = IdGenerator.GenerateID();
@@ -91,6 +107,28 @@ namespace WorldStorage.Controllers
                     }
                 }
 
+                foreach(Portal portal in world.layers[4].portals)
+                {
+                    string portal_id = IdGenerator.GenerateID();
+                    query = "INSERT INTO [Portals] (portal_id, world_id, x, y, name) VALUES(@portal_id, @world_id, @portal_x, @portal_y, @portal_name);";
+                    sqlCommand = new SqlCommand(query, connection);
+                    sqlCommand.Parameters.AddWithValue("@portal_id", portal_id);
+                    sqlCommand.Parameters.AddWithValue("@world_id", id);
+                    sqlCommand.Parameters.AddWithValue("@portal_y", portal.y);
+                    sqlCommand.Parameters.AddWithValue("@portal_x", portal.x);
+                    sqlCommand.Parameters.AddWithValue("@portal_name", portal.name);
+                    await sqlCommand.ExecuteNonQueryAsync();
+
+                    if(portal.link != null)
+                    {
+                        query = "INSERT INTO [Links] (portal1_id, portal2_id) VALUES(@portal1_id, @portal2_id);";
+                        sqlCommand = new SqlCommand(query, connection);
+                        sqlCommand.Parameters.AddWithValue("@portal1_id", portal_id);
+                        sqlCommand.Parameters.AddWithValue("@portal2_id", portal.link.portal_target);
+                        await sqlCommand.ExecuteNonQueryAsync();
+                    }
+                }
+
                 connection.Close();
                 return id;
             }
@@ -99,6 +137,105 @@ namespace WorldStorage.Controllers
                 Console.WriteLine(e.Message);
                 return null;
             }
+        }
+
+        [HttpGet, Authorize]
+        public async Task<List<Tuple<string, string>>> GetWorldsAsync(string start)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                List<Tuple<string, string>> res = new List<Tuple<string, string>>();
+                string id, name;
+                await connection.OpenAsync();
+                string query = "SELECT w.world_id, w.name FROM [Worlds] as w WHERE w.name LIKE '%" + start + "%';";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    id = (string)reader["world_id"];
+                    name = (string)reader["name"];
+                    res.Add(new Tuple<string, string>(id, name));
+                }
+                reader.Close();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        [HttpGet, Authorize]
+        public async Task<List<Tuple<string, string>>> GetPortalsAsync(string world_id, string start)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                List<Tuple<string, string>> res = new List<Tuple<string, string>>();
+                string id, name;
+                await connection.OpenAsync();
+                string query = "SELECT p.portal_id, p.name FROM [Portals] as p WHERE p.world_id = @id AND p.name LIKE '%" + start + "%';";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", world_id);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    id = (string)reader["portal_id"];
+                    name = (string)reader["name"];
+                    res.Add(new Tuple<string, string>(id, name));
+                }
+                reader.Close();
+                connection.Close();
+                return res;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
+
+        [HttpGet, Authorize]
+        public async Task<float> GetPortalAsync(string id)
+        {
+            string location = System.IO.Path.GetFullPath(@"..\..\");
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            SqlConnection connection = new SqlConnection(connectionString);
+            try
+            {
+                float x = 0;
+                await connection.OpenAsync();
+                string query = "SELECT p.x FROM [Portals] as p WHERE p.portal_id = @id;";
+                SqlCommand sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    x = Convert.ToSingle((double)reader["x"]);
+                }
+                reader.Close();
+                connection.Close();
+                return x;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+        }
+
+        [HttpPut]
+        public async Task<string> PutAsync(string id, World world)
+        {
+            await DeleteAsync(id, false);
+            return await PostAsync(world, id);
         }
 
         [HttpGet, Authorize]
@@ -138,7 +275,7 @@ namespace WorldStorage.Controllers
         public async Task<World> GetAsync(string id)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30;MultipleActiveResultSets=True";
             SqlConnection connection = new SqlConnection(connectionString);
             try
             {
@@ -216,6 +353,45 @@ namespace WorldStorage.Controllers
                     }
                     reader.Close();
                 }
+
+                query = "SELECT p.portal_id, p.name, p.x, p.y, l.portal1_id, l.portal2_id FROM [Portals] as p LEFT JOIN [LINKS] as l ON l.portal1_id = p.portal_id OR l.portal2_id = p.portal_id WHERE p.world_id = @id;";
+                sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                res.layers[4].portals = new List<Portal>();
+                reader = await sqlCommand.ExecuteReaderAsync();
+                Portal p;
+                Link link;
+                while (reader.Read())
+                {
+                    p = new Portal();
+                    if (!reader.IsDBNull(4))
+                    {
+                        link = new Link();
+                        if ((string)reader["portal_id"] == (string)reader["portal1_id"])
+                        {
+                            link.portal_target = (string)reader["portal2_id"];
+                        }
+                        else
+                        {
+                            link.portal_target = (string)reader["portal1_id"];
+                        }
+                        query = "SELECT w.world_id FROM [Worlds] as w INNER JOIN [Portals] as p ON w.world_id = p.world_id WHERE p.portal_id = @id;";
+                        sqlCommand = new SqlCommand(query, connection);
+                        sqlCommand.Parameters.AddWithValue("@id", link.portal_target);
+                        SqlDataReader reader2 = await sqlCommand.ExecuteReaderAsync();
+                        if (reader2.Read())
+                        {
+                            link.world_target = (string)reader2["world_id"];
+                        }
+                        reader2.Close();
+                        p.link = link;
+                    }
+                    p.name = (string)reader["name"];
+                    p.x = Convert.ToSingle((double)reader["x"]);
+                    p.y = Convert.ToSingle((double)reader["y"]);
+                    res.layers[4].portals.Add(p);
+                }
+                reader.Close();
                 connection.Close();
                 return res;
             }
@@ -255,7 +431,7 @@ namespace WorldStorage.Controllers
         }
 
         [HttpDelete, Authorize]
-        public async Task<int> DeleteAsync(string id)
+        public async Task<int> DeleteAsync(string id, bool delete_world = true)
         {   //TODO: extend for all related tables
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
@@ -267,26 +443,29 @@ namespace WorldStorage.Controllers
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
                 int res = await sqlCommand.ExecuteNonQueryAsync();
-                if(res != 0)
+                query = "DELETE FROM [Sprites] WHERE layer_id IN (SELECT l.layer_id FROM [Layers] AS l WHERE l.world_id = @id);";
+                sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                res = await sqlCommand.ExecuteNonQueryAsync();
+
+                query = "DELETE FROM [Layers] WHERE world_id = @id;";
+                sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                res = await sqlCommand.ExecuteNonQueryAsync();
+                query = "DELETE FROM [LINKS] WHERE portal1_id IN (SELECT p.portal_id FROM [Portals] as p WHERE p.world_id = @id) OR portal2_id IN (SELECT p.portal_id FROM [Portals] as p WHERE p.world_id = @id)";
+                sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                res = await sqlCommand.ExecuteNonQueryAsync();
+                query = "DELETE FROM [Portals] WHERE world_id = @id;";
+                sqlCommand = new SqlCommand(query, connection);
+                sqlCommand.Parameters.AddWithValue("@id", id);
+                res = await sqlCommand.ExecuteNonQueryAsync();
+                if (delete_world)
                 {
-                    query = "DELETE FROM [Sprites] WHERE layer_id IN (SELECT l.layer_id FROM [Layers] AS l WHERE l.world_id = @id);";
+                    query = "DELETE FROM [Worlds] WHERE world_id = @id;";
                     sqlCommand = new SqlCommand(query, connection);
                     sqlCommand.Parameters.AddWithValue("@id", id);
                     res = await sqlCommand.ExecuteNonQueryAsync();
-                    if(res != 0)
-                    {
-                        query = "DELETE FROM [Layers] WHERE world_id = @id;";
-                        sqlCommand = new SqlCommand(query, connection);
-                        sqlCommand.Parameters.AddWithValue("@id", id);
-                        res = await sqlCommand.ExecuteNonQueryAsync();
-                        if(res != 0)
-                        {
-                            query = "DELETE FROM [Worlds] WHERE world_id = @id;";
-                            sqlCommand = new SqlCommand(query, connection);
-                            sqlCommand.Parameters.AddWithValue("@id", id);
-                            res = await sqlCommand.ExecuteNonQueryAsync();
-                        }
-                    }
                 }
                 connection.Close();
                 return res;

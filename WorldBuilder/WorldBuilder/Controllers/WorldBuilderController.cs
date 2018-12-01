@@ -35,11 +35,21 @@ namespace WorldBuilder.Controllers
             return Json(res);
         }
 
+        [HttpPut]
+        [RequestSizeLimit(100 * 1024)]
+        public async Task<ActionResult> _UpdateWorld(string id, string world)
+        {
+            World world_obj = JsonConvert.DeserializeObject<World>(world);
+            string res = await new WorldController().PutAsync(id, world_obj);
+            return Json(res);
+        }
+
         [HttpGet]
         public async Task<ActionResult> _GetWorld(string id)
         {
             World res = await new WorldController().GetAsync(id);
             return Json(res);
         }
+        
     }
 }

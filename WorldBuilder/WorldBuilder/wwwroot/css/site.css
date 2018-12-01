@@ -69,6 +69,12 @@ aside{
     background-color:var(--dark-color);
 }
 
+aside.right{
+    right:0;
+    left: auto;
+    float:right;
+}
+
 .slider{
     height:30px;
 }

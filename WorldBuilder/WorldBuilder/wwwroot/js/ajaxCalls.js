@@ -281,6 +281,27 @@ function postWorld(world) {
     });
 }
 
+function updateWorld(world) {
+    let jsonData = JSON.stringify(world);
+    $.ajax({
+        url: siteURL + 'WorldBuilder/_UpdateWorld',
+        type: 'PUT',
+        data: {
+            id: $('[data-world-id]').attr('data-world-id'),
+            world: jsonData
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                window.location = window.location;
+            }
+        },
+        error: function (response) {
+
+        }
+    })
+}
+
 function postMagic(data, image, name) {
     let jsonData = JSON.stringify(data);
     $.ajax({
@@ -464,6 +485,62 @@ function trainNetwork(id) {
         success: function (response) {
             if (response) {
                 window.location = window.location;
+            }
+        },
+        error: function (response) {
+        }
+    });
+}
+
+function getWorldsByName(name) {
+    $.ajax({
+        url: siteURL + 'Worlds/_GetWorldsByName',
+        type: 'GET',
+        data: {
+            start: name
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                $('#world-target option').remove();
+                $('[data-target="#world-target"] .search-result').remove();
+                for (let i = 0; i < response.length; i++) {
+                    $('#world-target').append('<option value="' + response[i].item1 + '">' + response[i].item2 + '</option>');
+                    $('[data-target="#world-target"] .search-result-group').append('<button tabindex="0" class="search-result col-lg-12 col-md-12">' + response[i].item2 + '</button');
+                }
+                if (response.length > 0) {
+                    $('#world-target').val(response[0].item1);
+                    getPortalsByName(response[0].item1, "");
+                }
+            }
+        },
+        error: function (response) {
+        }
+    });
+}
+
+function getPortalsByName(id, name, onsuccess, portal_id) {
+    $.ajax({
+        url: siteURL + 'Worlds/_GetPortals',
+        type: 'GET',
+        data: {
+            id: id,
+            start: name
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response) {
+                $('#portal-target option').remove();
+                $('[data-target="#portal-target"] .search-result').remove();
+                for (let i = 0; i < response.length; i++) {
+                    $('#portal-target').append('<option value="' + response[i].item1 + '">' + response[i].item2 + '</option>');
+                    $('[data-target="#portal-target"] .search-result-group').append('<button tabindex="0" class="search-result col-lg-12 col-md-12">' + response[i].item2 + '</button');
+                }
+                if (response.length > 0) {
+                    $('#portal-target').val(response[0].item1);
+                }
+                if (onsuccess != undefined)
+                    onsuccess(portal_id);
             }
         },
         error: function (response) {

@@ -305,7 +305,7 @@ namespace WorldStorage.Controllers
             {
                 train.Iteration();
                 epoch++;
-            } while (train.Error > 0.05);
+            } while (train.Error > 0.04);
 
             train.FinishTraining();
         }
@@ -319,7 +319,7 @@ namespace WorldStorage.Controllers
             try
             {
                 string data = "";
-                int h_c = 0, h_l = 0, output = 0;
+                int h_c = 0, h_l = 0;
                 await connection.OpenAsync();
                 string query = "SELECT n.data, n.hidden_count, n.hidden_length as output FROM [Networks] as n WHERE n.network_id = @id;";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);

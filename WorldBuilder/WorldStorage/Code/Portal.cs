@@ -7,6 +7,9 @@ namespace WorldStorage.Code
 {
     public class Portal
     {
+        public string name;
         public float x;
+        public float y;
+        public Link link;
     }
 }

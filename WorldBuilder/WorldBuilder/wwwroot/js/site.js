@@ -57,7 +57,8 @@ let layers = [
         size: undefined,
         color: [50, 50, 50, 1],
         color_id: undefined,
-        sprites: []
+        sprites: [],
+        portals: []
     },
     {
         x: [],
@@ -105,12 +106,6 @@ $(document).ready(function () {
         $('#world-points').text('11');
         $('.slider .handle').attr('style', 'left:0%');
     })
-
-    $(document).on('click', '[data-remove="world"]', function () {
-        let card = $(this).parent().closest('.card');
-        let id = card.attr('data-world-id');
-        deleteWorld(id);
-    });
 
     if (window.location.pathname.includes('/ColorPalette') ||
         window.location.pathname.includes('/WorldBuilder')) {
@@ -214,42 +209,45 @@ $(document).ready(function () {
     });
 
     $(document).on('mouseup', 'div[data-role="drag-surface"]', function (event) {
-        let image = $(this).find('img');
-        let s = image.attr('style');
-        let posX = Number(s.substring(s.indexOf('left: ') + 'left: '.length, s.indexOf('px')));
-        let posY = Number(s.substring(s.indexOf('top: ') + 'top: '.length, s.lastIndexOf('px')));
-        let zoneX = $('#background').offset().left;
-        let zoneY = $('#background').offset().top;
-        let width = $('#background').width();
-        let height = $('#background').height();
+        if ($(this).find('[data-portal]').length == 0) {
+            let image = $(this).find('img');
+            let s = image.attr('style');
+            let posX = Number(s.substring(s.indexOf('left: ') + 'left: '.length, s.indexOf('px')));
+            let posY = Number(s.substring(s.indexOf('top: ') + 'top: '.length, s.lastIndexOf('px')));
+            let zoneX = $('#background').offset().left;
+            let zoneY = $('#background').offset().top;
+            let width = $('#background').width();
+            let height = $('#background').height();
 
-        let scroll_left = getScrollLeft();
-        let offset = (layers[layerIndex].size - 100) * scroll_left / 100;
+            let scroll_left = getScrollLeft();
+            let offset = (layers[layerIndex].size - 100) * scroll_left / 100;
 
-        if ((posX > zoneX && posX < zoneX + width) &&
-            (posY > zoneY && posY < zoneY + height)) {
-            //in range
-            let zIndex = maxZIndex(layers[layerIndex].sprites) + 1;
-            let sprite = {
-                id: sprite_id,
-                x: 100 * (posX - zoneX) / width + offset,
-                y: 100 * (posY - zoneY) / height,
-                size: 10,
-                rotation: 0,
-                zIndex: zIndex
-            };
-            layers[layerIndex].sprites.push(sprite);
-            $('.layer' + layerIndex + ':not(.handle)').append('<img draggable="false" class="image pos-absolute" src="' + image.attr('src')
-                + '" style="left: ' + (sprite.x - offset) + '%; top: ' + sprite.y
-                + '%; width: ' + sprite.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + sprite.rotation + 'deg); z-index:' + sprite.zIndex + '"/>');
+            if ((posX > zoneX && posX < zoneX + width) &&
+                (posY > zoneY && posY < zoneY + height)) {
+                //in range
+                let zIndex = maxZIndex(layers[layerIndex].sprites) + 1;
+                let sprite = {
+                    id: sprite_id,
+                    x: 100 * (posX - zoneX) / width + offset,
+                    y: 100 * (posY - zoneY) / height,
+                    size: 10,
+                    rotation: 0,
+                    zIndex: zIndex
+                };
+                layers[layerIndex].sprites.push(sprite);
+                $('.layer' + layerIndex + ':not(.handle)').append('<img draggable="false" class="image pos-absolute" src="' + image.attr('src')
+                    + '" style="left: ' + (sprite.x - offset) + '%; top: ' + sprite.y
+                    + '%; width: ' + sprite.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + sprite.rotation + 'deg); z-index:' + sprite.zIndex + '"/>');
+            }
+            $(this).remove();
+            sprite_id = undefined;
         }
-        $(this).remove();
-        sprite_id = undefined;
     });
 
-    $(document).on('mousedown', '.layer img', function (e) {
+    $(document).on('mousedown', '.layer .image', function (e) {
         if ($(this).parent().closest('.layer').hasClass('layer' + layerIndex)) {
-            movingImg = $(this).index() - 1;
+            let sel = '.layer' + layerIndex + ':not(.handle) .image';
+            movingImg = $(sel).index($(this));
             let s = $(this).attr('style');
             let left = layers[layerIndex].sprites[movingImg].x;
             let top = layers[layerIndex].sprites[movingImg].y;
@@ -274,9 +272,9 @@ $(document).ready(function () {
         start = undefined;
     });
 
-    $(document).on('click', '.layer img', function (e) {
+    $(document).on('click', '.layer .image', function (e) {
         if ($(this).parent().closest('.layer').hasClass('layer' + layerIndex)) {
-            let index = $(this).index() - 1;
+            let index = $('.layer' + layerIndex + ':not(.handle) .image').index($(this));
             let ratio = $(this)[0].naturalHeight / $(this)[0].naturalWidth;
             let size = layers[layerIndex].sprites[index].size;
             let width = size;
@@ -422,11 +420,27 @@ $(document).ready(function () {
             //submit world
             let world = {
                 layers: layers,
-                portals: [],//TODO: implement portals
                 name: $('[data-role="world-name"]').val(),
                 planet_id: '68cef04fb45a4074804769e1ead3fdfb'
             }
             postWorld(world);
+        }
+    });
+
+    $(document).on('click', '[data-target="update-world"]', function () {
+        let valid = true;
+        for (let i = 0; i < layers.length; i++) {
+            if (layers[i].color_id == undefined)
+                valid = false;
+        }
+        if (valid) {
+            //update world
+            let world = {
+                layers: layers,
+                name: $('[data-role="world-name"]').val(),
+                planet_id: '68cef04fb45a4074804769e1ead3fdfb'
+            }
+            updateWorld(world);
         }
     });
 
@@ -456,7 +470,7 @@ function loadWorldsToContent(response) {
                 + response[i].item1 + '"><label class="col-lg-6 col-md-6">'
                 + response[i].item2 + '</label><div class="options col-lg-6 col-md-6 float-right"><a href="'
                 + ("WorldBuilder/Edit/" + response[i].item1) + '"><i class="font-24 far fa-edit"></i></a>'
-                + '<a data-remove="world" class="danger" href="javascript:void(0)"><i class="font-24 fas fa-trash"></i></a></div></div>');//TODO: implement remove world
+                + '<a data-remove="world" class="danger" href="javascript:deleteWorld(\'' + response[i].item1 + '\')"><i class="font-24 fas fa-trash"></i></a></div></div>');
         }
     }
 }
@@ -489,7 +503,7 @@ function moveImage(e) {
     posY *= 100 / $('#background').height();
     layers[layerIndex].sprites[movingImg].x = start.ix + posX;//set the image pos as the initial pos + the distance the mouse moved
     layers[layerIndex].sprites[movingImg].y = start.iy + posY;
-    updateSprite(layers[layerIndex].sprites[movingImg], $($('.layer.layer' + layerIndex + ' img')[movingImg]), offset);
+    updateSprite(layers[layerIndex].sprites[movingImg], $($('.layer.layer' + layerIndex + ' .image')[movingImg]), offset);
 }
 
 function reloadPage() {
@@ -511,10 +525,18 @@ function updateView() {
         let offset = (layers[i].size - 100) * left / 100;
 
         for (let j = 0; j < layers[i].sprites.length; j++) {
-            let selector = '.layer.layer' + i + ' img';
+            let selector = '.layer.layer' + i + ' .image';
             let sprite = $($(selector)[j]);
             updateSprite(layers[i].sprites[j], sprite, offset);
         }
+    }
+
+    let offset = (layers[4].size - 100) * left / 100;
+
+    for (let j = 0; j < layers[4].portals.length; j++) {
+        let selector = '.layer.layer' + 4 + ' .portal';
+        let portal = $($(selector)[j]);
+        updatePortal(layers[4].portals[j], portal, offset);
     }
 
     let color = layers[layerIndex].color;
@@ -590,17 +612,26 @@ function fillFromServer(world) {
             sprite_ids.push(layers[i].sprites[j].id);
     }
 
+
+    //add portal objects to layer4
+    let scroll_left = getScrollLeft();
+    let offset = (layers[4].size - 100) * scroll_left / 100;
+    for (let i = 0; i < layers[4].portals.length; i++) {
+        let portal = layers[4].portals[i];
+        $('.layer' + 4 + ':not(.handle)').append('<div draggable="false" class="portal pos-absolute"'
+            + ' style="left: ' + (portal.x - offset) + '%; top: ' + portal.y
+            + '%; width: 10%; padding-top:10%; transform: translateX(-50%) translateY(-50%);z-index: 999;"/>');
+    }
+
     getSpritesSources(sprite_ids, genSprites);
     $('[data-role="world-name"]').val(world.name);
     updateView();
+    getWorldsByName("");
 }
 
 function genSprites(response) {
     let scroll_left = getScrollLeft();
     let offset;
-    for (let i = 0; i < response.length; i++) {
-        console.log(response.keys[0]);
-    }
     for (let i = 0; i < layers.length; i++) {
         offset = (layers[i].size - 100) * scroll_left / 100;
         for (let j = 0; j < layers[i].sprites.length; j++) {

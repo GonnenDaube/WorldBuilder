@@ -34,5 +34,23 @@ namespace WorldBuilder.Controllers
             int res = await new WorldController().DeleteAsync(id);
             return Json(res);
         }
+
+        [HttpGet]
+        public async Task<ActionResult> _GetPortals(string id, string start)
+        {
+            return Json(await new WorldController().GetPortalsAsync(id, start));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> _GetPortal(string id)
+        {
+            return Json(await new WorldController().GetPortalAsync(id));
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> _GetWorldsByName(string start)
+        {
+            return Json(await new WorldController().GetWorldsAsync(start));
+        }
     }
 }

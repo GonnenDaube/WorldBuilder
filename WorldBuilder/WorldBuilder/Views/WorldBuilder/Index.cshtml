@@ -38,7 +38,7 @@
         <label>World Name:</label>
     </div>
     <div class="col-lg-12 col-md-12 margin-top-30 font-18 light text-center">
-        <input class="text-field dark" type="text" data-role="world-name" value="New_World"/>
+        <input class="text-field dark" type="text" data-role="world-name" value="New_World" />
     </div>
     <div class="col-lg-12 col-md-12 margin-top-30 font-18 light text-center">
         <label>Select layer to edit:</label>
@@ -62,6 +62,23 @@
         <i class="col-lg-12 col-md-12 far fa-images text-center light font-50 pointer"></i>
     </div>
 
+    <div class="col-lg-12 col-md-12 margin-top-30 font-18 light text-center">
+        <label>Add portals to layer:</label>
+    </div>
+    <div class="portal-manager col-md-12 col-lg-12 margin-top-10 horizontal-center">
+        <i class="portal-highlighter col-lg-6 col-md-6 fas fa-hiking text-center light font-50 pointer"></i>
+        <i class="portal-adder col-lg-6 col-md-6 text-center light font-50 pointer fas fa-plus"></i>
+    </div>
+    <div class="portal-editor col-md-12 col-lg-12 margin-top-10 horizontal-center light">
+        <label class="col-lg-12 col-md-12">Portal Name:</label>
+        <input class="text-field dark col-md-12 col-lg-12" type="text" data-role="portal-name" value="New_Portal" />
+        <label class="col-lg-6 col-md-6 margin-top-15">Link to portal:</label>
+        <div class="slideOne col-lg-6 col-md-6" data-role="isLink">
+            <input type="checkbox" value="None" id="slideOne" name="check" />
+            <label for="slideOne"></label>
+        </div>
+    </div>
+
     <div class="col-lg-12 col-md-12 bottom-30 margin-bottom-30 pos-absolute">
         <button class="btn-default primary horizontal-center pos-absolute" data-target="submit-world">Upload</button>
     </div>
@@ -77,5 +94,23 @@
     <div data-target="images" class="server-image col-lg-12 col-md-12 margin-top-100 horizontal-center">
 
     </div>
+</aside>
+
+<aside class="link-selector light right" style="z-index:100; display:none;">
+    <label class="col-lg-12 col-md-12 margin-top-100">Select portal to link to:</label>
+    <label class="col-lg-12 col-md-12 margin-top-30">World name:</label>
+    <div class="col-lg-12 col-md-12 search" data-target="#world-target">
+        <input tabindex="0" type="text" class="text-field col-lg-12 col-md-12 margin-top-10 dark" />
+        <div class="search-result-group col-lg-12 col-md-12">
+        </div>
+    </div>
+    <label class="col-lg-12 col-md-12 margin-top-30">Portal name:</label>
+    <div class="col-lg-12 col-md-12 search" data-target="#portal-target">
+        <input tabindex="0" type="text" class="text-field col-lg-12 col-md-12 margin-top-10 dark" />
+        <div class="search-result-group col-lg-12 col-md-12">
+        </div>
+    </div>
+    <select class="hidden" id="world-target" style="display:none"></select>
+    <select class="hidden" id="portal-target" style="display:none"></select>
 </aside>
 
