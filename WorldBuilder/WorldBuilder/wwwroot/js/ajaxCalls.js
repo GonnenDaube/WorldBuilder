@@ -176,7 +176,10 @@ function getSpritesSources(ids, onsuccess) {
     $.ajax({
         url: siteURL + 'SpriteBuilder/_GetSpriteSources',
         type: 'GET',
-        contentType: "application/json; charset=utf-8",
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
         data: jsonData,
         datatype: 'json',
         success: function (response) {

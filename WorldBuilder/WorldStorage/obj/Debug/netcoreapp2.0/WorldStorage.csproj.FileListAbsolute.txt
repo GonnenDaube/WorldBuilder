@@ -9,3 +9,14 @@ D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debu
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.dll
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.pdb
 D:\Users\Gonnen\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.csprojAssemblyReference.cache
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\bin\Debug\netcoreapp2.0\WorldStorage.deps.json
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\bin\Debug\netcoreapp2.0\WorldStorage.runtimeconfig.json
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\bin\Debug\netcoreapp2.0\WorldStorage.runtimeconfig.dev.json
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\bin\Debug\netcoreapp2.0\WorldStorage.dll
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\bin\Debug\netcoreapp2.0\WorldStorage.pdb
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.csprojResolveAssemblyReference.cache
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.csproj.CoreCompileInputs.cache
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.AssemblyInfoInputs.cache
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.AssemblyInfo.cs
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.dll
+D:\Users\GonnenPC\Documents\GitHub\WorldBuilder\WorldBuilder\WorldStorage\obj\Debug\netcoreapp2.0\WorldStorage.pdb

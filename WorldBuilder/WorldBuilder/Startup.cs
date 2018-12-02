@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Features;
 using WorldBuilder.Code;
+using Microsoft.AspNetCore;
 
 namespace WorldBuilder
 {
@@ -32,7 +33,14 @@ namespace WorldBuilder
                 options.Cookie.HttpOnly = true;
             });
 
-            services.Configure<FormOptions>(x => x.KeyLengthLimit = 1000 * 1024);//1 MB limit
+            services.Configure<FormOptions>(x =>
+            {
+                x.KeyLengthLimit = 100_000_000;
+                x.ValueCountLimit = 100_000;
+                x.ValueLengthLimit = 100_000;
+            });//1 GB limit
+
+            
 
             services.AddMvc(options =>
             {
@@ -52,6 +60,13 @@ namespace WorldBuilder
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            WebHost.CreateDefaultBuilder()
+            .UseStartup<Startup>()
+            .UseKestrel(options =>
+            {
+                options.Limits.MaxRequestBodySize = null;
+            });
 
             app.UseStaticFiles();
             app.UseSession();
