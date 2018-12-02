@@ -61,13 +61,6 @@ namespace WorldBuilder
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            WebHost.CreateDefaultBuilder()
-            .UseStartup<Startup>()
-            .UseKestrel(options =>
-            {
-                options.Limits.MaxRequestBodySize = null;
-            });
-
             app.UseStaticFiles();
             app.UseSession();
             app.UseMvc(routes =>
