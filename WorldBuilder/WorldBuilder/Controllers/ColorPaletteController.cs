@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WorldStorage.Controllers;
 
@@ -17,6 +18,9 @@ namespace WorldBuilder.Controllers
         [HttpPost]
         public async Task<ActionResult> _PostColor(float r, float g, float b, float a)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new ColorController().PostAsync(r, g, b, a);
             return Json(res);
         }
@@ -38,6 +42,9 @@ namespace WorldBuilder.Controllers
         [HttpDelete]
         public async Task<ActionResult> _DeleteColor(string id)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new ColorController().DeleteAsync(id);
             return Json(res);
         }

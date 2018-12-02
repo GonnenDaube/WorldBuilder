@@ -1,4 +1,16 @@
-﻿.btn-default {
+﻿button *{
+    pointer-events:none;
+}
+
+.image *{
+    pointer-events:none;
+}
+
+.color *{
+    pointer-events:none;
+}
+
+.btn-default {
     border: none;
     font-size: 20px;
     border-radius:15px;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WorldStorage.Code;
 using WorldStorage.Controllers;
@@ -23,6 +24,9 @@ namespace WorldBuilder.Controllers
         [HttpPost]
         public async Task<ActionResult> _PostMagicType(string name, string image, string data)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new MagicController().PostAsync(name, image, data);
             return Json(res);
         }
@@ -30,6 +34,9 @@ namespace WorldBuilder.Controllers
         [HttpPost]
         public async Task<ActionResult> _PostTrainData(string data, string magic_id)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new MagicController().PostAsync(data, magic_id);
             return Json(res);
         }
@@ -58,6 +65,9 @@ namespace WorldBuilder.Controllers
         [HttpDelete]
         public async Task<ActionResult> _DeleteMagicType(string id)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new MagicController().DeleteAsync(id);
             return Json(res);
         }

@@ -11,6 +11,24 @@ var awaitingGetSpriteResult;
 var awaitingGetWorldsResult;
 //
 
+function login(username, password) {
+    $.ajax({
+        url: siteURL + 'Login/_Login',
+        type: 'POST',
+        data: {
+            username: username,
+            password: password
+        },
+        datatype: 'json',
+        success: function (response) {
+            if (response)
+                window.location = siteURL + 'Home';
+        },
+        error: function (response) {
+        }
+    });
+}
+
 function postColor(r, g, b, a) {
     $.ajax({
         url: siteURL + 'ColorPalette/_PostColor',
@@ -25,8 +43,11 @@ function postColor(r, g, b, a) {
         success: function (response) {
             if (response)
                 window.location = window.location;
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -75,9 +96,12 @@ function deleteColor(id) {
         success: function (response) {
             if(response)
                 window.location = window.location;
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -95,9 +119,12 @@ function postImage(file, name, onsuccess) {
             if (response) {
                 onsuccess(response);
             }
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -115,9 +142,12 @@ function setSpriteNormalMap(spriteId, normalId, onsuccess) {
             if (response) {
                 onsuccess(response);
             }
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -199,10 +229,11 @@ function getWorld(id, onsuccess, onerror) {
         },
         datatype: 'json',
         success: function (response) {
-            if (response != null || response != undefined)
+            if (response !== null || response !== undefined)
                 onsuccess(response);
-            else
+            else {
                 onerror();
+            }
         },
         error: function (response) {
             onerror();
@@ -221,8 +252,11 @@ function deleteWorld(id) {
         success: function (response) {
             if (response)
                 window.location = window.location;
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -252,9 +286,11 @@ function deleteSprite(id) {
         success: function (response) {
             if (response)
                 window.location = window.location;
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
-
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -274,9 +310,12 @@ function postWorld(world) {
             if (response) {
                 window.location = siteURL + 'Worlds';
             }
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -295,9 +334,12 @@ function updateWorld(world) {
             if (response) {
                 window.location = window.location;
             }
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     })
 }
@@ -317,9 +359,12 @@ function postMagic(data, image, name) {
             if (response) {
                 window.location = window.location;
             }
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -344,9 +389,12 @@ function postTrainData(data, m_id) {
                     $('[data-target="success"]').hide(500);
                 }, 500);
             }
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -395,9 +443,12 @@ function deleteMagicType(id) {
         success: function (response) {
             if (response)
                 window.location = window.location;
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -416,9 +467,12 @@ function postNetwork(name, hiddenC, hiddenL) {
             if (response) {
                 window.location = window.location;
             }
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
 
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -454,8 +508,11 @@ function deleteNetwork(id) {
         success: function (response) {
             if (response)
                 window.location = window.location;
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -486,8 +543,11 @@ function trainNetwork(id) {
             if (response) {
                 window.location = window.location;
             }
+            else
+                window.location = siteURL + "Login";
         },
         error: function (response) {
+            window.location = siteURL + "Login";
         }
     });
 }
@@ -539,7 +599,7 @@ function getPortalsByName(id, name, onsuccess, portal_id) {
                 if (response.length > 0) {
                     $('#portal-target').val(response[0].item1);
                 }
-                if (onsuccess != undefined)
+                if (onsuccess !== undefined)
                     onsuccess(portal_id);
             }
         },

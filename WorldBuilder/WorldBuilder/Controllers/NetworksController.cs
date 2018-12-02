@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WorldStorage.Code;
 using WorldStorage.Controllers;
@@ -18,6 +19,9 @@ namespace WorldBuilder.Controllers
         [HttpPost]
         public async Task<ActionResult> _PostNetwork(string name, int hidden_count, int hidden_length)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new NetworkController().PostAsync(name, hidden_count, hidden_length);
             return Json(res);
         }
@@ -46,6 +50,9 @@ namespace WorldBuilder.Controllers
         [HttpDelete]
         public async Task<ActionResult> _DeleteNetwork(string id)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new NetworkController().DeleteAsync(id);
             return Json(res);
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WorldStorage.Controllers;
 
@@ -31,6 +32,9 @@ namespace WorldBuilder.Controllers
         [HttpDelete]
         public async Task<ActionResult> _DeleteWorld(string id)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new WorldController().DeleteAsync(id);
             return Json(res);
         }

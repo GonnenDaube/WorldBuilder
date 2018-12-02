@@ -52,6 +52,9 @@ namespace WorldBuilder.Controllers
         [HttpPut]
         public async Task<ActionResult> _SetSpriteNormal(string sprite, string normal)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new SpriteController().SetSpriteNormalAsync(sprite, normal);
             return Json(res);
         }
@@ -59,6 +62,9 @@ namespace WorldBuilder.Controllers
         [HttpPost]
         public async Task<ActionResult> _PostSprite(string file, string name)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             string res = await new SpriteController().PostAsync(file, name);
             return Json(res);
         }
@@ -66,6 +72,9 @@ namespace WorldBuilder.Controllers
         [HttpDelete]
         public async Task<ActionResult> _DeleteSprite(string id)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             int res = await new SpriteController().DeleteAsync(id);
             return Json(res);
         }

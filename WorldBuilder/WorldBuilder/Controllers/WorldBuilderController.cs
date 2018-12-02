@@ -30,6 +30,9 @@ namespace WorldBuilder.Controllers
         [RequestSizeLimit(100 * 1024)]
         public async Task<ActionResult> _PostWorld([FromBody]string value)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             World world = JsonConvert.DeserializeObject<World>(value);
             string res = await new WorldController().PostAsync(world);
             return Json(res);
@@ -39,6 +42,9 @@ namespace WorldBuilder.Controllers
         [RequestSizeLimit(100 * 1024)]
         public async Task<ActionResult> _UpdateWorld(string id, string world)
         {
+            string val = HttpContext.Session.GetString("isLogged");
+            if (string.IsNullOrEmpty(val))
+                return null;
             World world_obj = JsonConvert.DeserializeObject<World>(world);
             string res = await new WorldController().PutAsync(id, world_obj);
             return Json(res);

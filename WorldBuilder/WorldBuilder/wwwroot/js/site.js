@@ -77,7 +77,7 @@ let finalPY;
 
 $(document).ready(function () {
     //callValues();
-    if (layerIndex != -1) {
+    if (layerIndex !== -1) {
         if (window.location.pathname.includes('/WorldBuilder/Edit'))
             getWorld($('[data-world-id]').attr('data-world-id'), fillFromServer, fillLayers);
         else
@@ -115,7 +115,7 @@ $(document).ready(function () {
     }
 
     $(document).on('mousewheel', '.server-color', function () {
-        if ($(this).scrollTop() + $(this).height() == $(this).prop('scrollHeight')) {
+        if ($(this).scrollTop() + $(this).height() === $(this).prop('scrollHeight')) {
             //if reached bottom of element, load more
             if ($(this).find('.color').length < colorMaxNumber)
                 if (!awaitingGetColorResult) {
@@ -133,7 +133,7 @@ $(document).ready(function () {
     }
 
     $(document).on('mousewheel', '.server-image', function () {
-        if ($(this).scrollTop() + $(this).height() == $(this).prop('scrollHeight')) {
+        if ($(this).scrollTop() + $(this).height() === $(this).prop('scrollHeight')) {
             //if reached bottom of element, load more
             if ($(this).find('.image').length < spriteMaxNumber)
                 if (!awaitingGetSpriteResult) {
@@ -149,7 +149,7 @@ $(document).ready(function () {
     }
 
     $(document).on('mousewheel', 'content[data-target="worlds"]', function () {
-        if ($(this).scrollTop() + $(this).height() == $(this).prop('scrollHeight')) {
+        if ($(this).scrollTop() + $(this).height() === $(this).prop('scrollHeight')) {
             //if reached bottom of element, load more
             if ($(this).find('[data-world-id]').length < worldMaxNumber)
                 if (!awaitingGetWorldsResult) {
@@ -209,7 +209,7 @@ $(document).ready(function () {
     });
 
     $(document).on('mouseup', 'div[data-role="drag-surface"]', function (event) {
-        if ($(this).find('[data-portal]').length == 0) {
+        if ($(this).find('[data-portal]').length === 0) {
             let image = $(this).find('img');
             let s = image.attr('style');
             let posX = Number(s.substring(s.indexOf('left: ') + 'left: '.length, s.indexOf('px')));
@@ -262,7 +262,7 @@ $(document).ready(function () {
     });
 
     $(document).on('mousemove', 'body', function (e) {
-        if (movingImg != undefined) {
+        if (movingImg !== undefined) {
             moveImage(e);
         }
     });
@@ -378,8 +378,8 @@ $(document).ready(function () {
 
     $(document).on('keyup', 'body', function (e) {
         let keycode = e.keyCode ? e.keyCode : e.which;
-        if (keycode == 46) {//delete key
-            if (editedImg != undefined) {
+        if (keycode === 46) {//delete key
+            if (editedImg !== undefined) {
                 layers[layerIndex].sprites.splice(editedImg, 1);//remove sprite from metadata
                 $($('.layer.layer' + layerIndex + ' img')[editedImg]).remove();//remove sprite from DOM
                 $('.sprite-editor').remove();//remove editor from DOM
@@ -390,8 +390,8 @@ $(document).ready(function () {
 
     $(document).on('keyup', 'body', function (e){
         let keycode = e.keyCode ? e.keyCode : e.which;
-        if (keycode == 38) {//arrow up
-            if (editedImg != undefined) {//move forward
+        if (keycode === 38) {//arrow up
+            if (editedImg !== undefined) {//move forward
                 moveByZIndex(layers[layerIndex].sprites[editedImg].zIndex + 1, -1);//move sprite with zIndex + 1 backward
                 layers[layerIndex].sprites[editedImg].zIndex++;
                 let left = getScrollLeft();
@@ -399,8 +399,8 @@ $(document).ready(function () {
                 updateSprite(layers[layerIndex].sprites[editedImg], $($('.layer.layer' + layerIndex + ' img')[editedImg]), offset);
             }
         }
-        if (keycode == 40) {//arrow down
-            if (editedImg != undefined) {//move backward
+        if (keycode === 40) {//arrow down
+            if (editedImg !== undefined) {//move backward
                 moveByZIndex(layers[layerIndex].sprites[editedImg].zIndex - 1, 1);//move sprite with zIndex + 1 backward
                 layers[layerIndex].sprites[editedImg].zIndex--;
                 let left = getScrollLeft();
@@ -413,7 +413,7 @@ $(document).ready(function () {
     $(document).on('click', '[data-target="submit-world"]', function () {
         let valid = true;
         for (let i = 0; i < layers.length; i++) {
-            if (layers[i].color_id == undefined)
+            if (layers[i].color_id === undefined)
                 valid = false;
         }
         if (valid) {
@@ -430,7 +430,7 @@ $(document).ready(function () {
     $(document).on('click', '[data-target="update-world"]', function () {
         let valid = true;
         for (let i = 0; i < layers.length; i++) {
-            if (layers[i].color_id == undefined)
+            if (layers[i].color_id === undefined)
                 valid = false;
         }
         if (valid) {
@@ -448,6 +448,10 @@ $(document).ready(function () {
         let world_id = $(this).parent().closest('.card').attr('data-world-id');
         deleteWorld(world_id);
     });
+
+    $(document).on('click', '[data-target="login"]', function () {
+        login($('[data-target="username"]').val(), $('[data-target="password"]').val());
+    });
 });
 
 function moveByZIndex(zIndex, dir) {
@@ -455,15 +459,15 @@ function moveByZIndex(zIndex, dir) {
     //dir = 1 : forward
     let index = -1;
     for (let i = 0; i < layers[layerIndex].sprites.length; i++) {
-        if (layers[layerIndex].sprites[i].zIndex == zIndex)
+        if (layers[layerIndex].sprites[i].zIndex === zIndex)
             index = i;
     }
-    if (index != -1)
+    if (index !== -1)
         layers[layerIndex].sprites[index].zIndex += dir;
 }
 
 function loadWorldsToContent(response) {
-    if (response != null) {
+    if (response !== null) {
         for (let i = 0; i < response.length; i++) {
             $('content[data-target="worlds"]').append(
                 '<div class="card" data-world-id="'
@@ -568,7 +572,7 @@ function fillLayers() {
 
     for (let i = 0; i < layers.length; i++) {
         let num = Math.round(numHandles * Math.pow(q, 1 - layers.length + i));
-        if (num % 2 == 0)
+        if (num % 2 === 0)
             num++;
         for (let j = 0; j < num; j++) {
             $('#handles').append('<div class="handle layer' + i + '"></div>');
@@ -582,7 +586,7 @@ function fillLayers() {
         layers[i].x.push(0);
         layers[i].y.push(100);
         let num = Math.round(numHandles * Math.pow(q, 1 - layers.length + i));
-        if (num % 2 == 0)
+        if (num % 2 === 0)
             num++;
         for (let j = 0; j < num; j++) {
             layers[i].x.push(j * size / (num - 1));
@@ -645,7 +649,7 @@ function genSprites(response) {
 }
 
 function moveHandleEvent(event, index) {
-    if (index != -1 && layerIndex != -1) {
+    if (index !== -1 && layerIndex !== -1) {
         let mX = event.clientX;
         let mY = event.clientY;
         let pX = $('#handles').offset().left;
@@ -654,9 +658,9 @@ function moveHandleEvent(event, index) {
         let posY = mY - pY;
         let perX = 100 * posX / $('#handles').width();
         let perY = 100 * posY / $('#handles').height();
-        if (index == 0)
+        if (index === 0)
             perX = 0;
-        if (index == $('.handle.layer' + layerIndex).size() - 1)
+        if (index === $('.handle.layer' + layerIndex).size() - 1)
             perX = 100;
         if (perY < 0)
             perY = 0;
@@ -681,7 +685,7 @@ function getScrollLeft() {
 }
 
 function updatePointsArray(index, x, y) {
-    if (layerIndex != -1) {
+    if (layerIndex !== -1) {
         let left = getScrollLeft();
         layers[layerIndex].x[index + 1] = x + (layers[layerIndex].size - 100) * left / 100;
         layers[layerIndex].y[index + 1] = y;
@@ -745,7 +749,7 @@ function getCurveSegment(x1, x2, x3, y1, y2, y3) {
 }
 
 function positionHandles(layerIndex) {
-    if (layerIndex != -1) {
+    if (layerIndex !== -1) {
         let style = $('.scroll-handle').attr('style');
         let width = Number(style.substring(style.indexOf('width:') + 'width:'.length, style.lastIndexOf('%')));
         let left = Number(style.substring(style.indexOf('left:') + 'left:'.length, style.indexOf('%'))) - width / 2;
