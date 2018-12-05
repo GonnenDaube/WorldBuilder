@@ -640,7 +640,7 @@ function genSprites(response) {
         offset = (layers[i].size - 100) * scroll_left / 100;
         for (let j = 0; j < layers[i].sprites.length; j++) {
             let sprite = layers[i].sprites[j];
-            $('.layer' + i + ':not(.handle)').append('<img draggable="false" class="image pos-absolute" src="' + response[sprite.id]
+            $('.layer' + i + ':not(.handle)').append('<img draggable="false" class="image pos-absolute" src="' + response[sprite.id].item1
                 + '" style="left: ' + (sprite.x - offset) + '%; top: ' + sprite.y
                 + '%; width: ' + sprite.size + '%; height: auto; transform: translateX(-50%) translateY(-50%) rotate(' + sprite.rotation + 'deg); z-index:' + sprite.zIndex + '"/>');
         }

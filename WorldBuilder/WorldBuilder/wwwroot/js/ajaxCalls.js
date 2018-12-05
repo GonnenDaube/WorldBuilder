@@ -106,13 +106,14 @@ function deleteColor(id) {
     });
 }
 
-function postImage(file, name, onsuccess) {
+function postImage(file, name, hasScript, onsuccess) {
     $.ajax({
         url: siteURL + 'SpriteBuilder/_PostSprite',
         type: 'POST',
         data: {
             file: file,
-            name: name
+            name: name,
+            script: hasScript
         },
         datatype: 'json',
         success: function (response) {

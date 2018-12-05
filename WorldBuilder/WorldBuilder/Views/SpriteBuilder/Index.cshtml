@@ -17,7 +17,14 @@
             <input class="hidden" data-target="file-uploader" type="file" />
         </section>
         <section>
-            <div id="submit-image" class="margin-bottom-30 margin-top-30 pos-absolute horizontal-center" style="display:none">
+            <div id="submit-image" class="margin-bottom-30 pos-absolute horizontal-center" style="display:none">
+                <section>
+                    <label class="horizontal-center">Has Script:</label>
+                    <div class="slideOne col-lg-6 col-md-6 horizontal-center" data-role="hasScript" style="margin-right:0px">
+                        <input type="checkbox" value="None" id="slideOne" name="check" />
+                        <label for="slideOne"></label>
+                    </div>
+                </section>
                 <button class="btn-default primary margin-right-30" data-target="submit-image">Upload</button>
                 <button class="btn-default dark" data-target="dismiss-image">Dismiss</button>
             </div>

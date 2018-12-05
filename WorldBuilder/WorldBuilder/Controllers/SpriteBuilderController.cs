@@ -37,7 +37,7 @@ namespace WorldBuilder.Controllers
             if (value == null || value == "")
                 value = Uri.UnescapeDataString(Request.QueryString.Value.Substring(1));
             List<string> ids = JsonConvert.DeserializeObject<List<string>>(value);
-            Dictionary<string, string> res = await new SpriteController().GetAsync(ids);
+            Dictionary<string, Tuple<string, bool, string>> res = await new SpriteController().GetAsync(ids);
             return Json(res);
         }
 
@@ -59,12 +59,12 @@ namespace WorldBuilder.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> _PostSprite(string file, string name)
+        public async Task<ActionResult> _PostSprite(string file, string name, bool script)
         {
             string val = HttpContext.Session.GetString("isLogged");
             if (string.IsNullOrEmpty(val))
                 return null;
-            string res = await new SpriteController().PostAsync(file, name);
+            string res = await new SpriteController().PostAsync(file, name, script);
             return Json(res);
         }
 

@@ -54,18 +54,19 @@ namespace WorldStorage.Controllers
         }
 
         [HttpGet]
-        public async Task<Dictionary<string, string>> GetAsync(List<string> ids)
+        public async Task<Dictionary<string, Tuple<string, bool, string>>> GetAsync(List<string> ids)
         {
             string location = System.IO.Path.GetFullPath(@"..\..\");
             string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
             SqlConnection connection = new SqlConnection(connectionString);
             try
             {
-                Dictionary<string, string> res = new Dictionary<string, string>();
+                Dictionary<string, Tuple<string, bool, string>> res = new Dictionary<string, Tuple<string, bool, string>>();
                 string id, file, name;
+                bool script;
                 byte[] data;
                 await connection.OpenAsync();
-                string query = "SELECT s.sprite_type_id, s.image, s.name FROM [SpriteTypes] as s WHERE s.sprite_type_id IN (";//only selects sprites that appear in the list
+                string query = "SELECT s.sprite_type_id, s.image, s.name, s.Scriptable FROM [SpriteTypes] as s WHERE s.sprite_type_id IN (";//only selects sprites that appear in the list
                 for(int i = 0; i < ids.Count; i++)
                 {
                     query += "'" + ids[i] + ((i == ids.Count - 1) ? "');" : "', ");
@@ -78,9 +79,10 @@ namespace WorldStorage.Controllers
                     id = reader.GetString(0);
                     data = (byte[])reader["image"];
                     name = (string)reader["name"];
+                    script = (bool)reader["Scriptable"];
                     file = Convert.ToBase64String(data);
                     file = "data:image/" + name.Substring(name.IndexOf('.') + 1) + ";base64," + file;
-                    res.Add(id, file);
+                    res.Add(id, new Tuple<string, bool, string>(file, script, name.Substring(0, name.IndexOf('.'))));
                 }
                 reader.Close();
                 connection.Close();
@@ -146,7 +148,7 @@ namespace WorldStorage.Controllers
         }
 
         [HttpPost]
-        public async Task<string> PostAsync([FromBody]string file, [FromBody]string name)
+        public async Task<string> PostAsync([FromBody]string file, [FromBody]string name, [FromBody] bool script)
         {
             try
             {
@@ -158,12 +160,13 @@ namespace WorldStorage.Controllers
                 string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + location + @"WorldBuilder\WorldStorage\Database\WorldDB.mdf;Integrated Security=True;Connect Timeout=30";
                 SqlConnection connection = new SqlConnection(connectionString);
                 await connection.OpenAsync();
-                string query = "INSERT INTO [SpriteTypes] (sprite_type_id, image, name, create_time) VALUES (@id, @image, @name, @time);";
+                string query = "INSERT INTO [SpriteTypes] (sprite_type_id, image, name, create_time, Scriptable) VALUES (@id, @image, @name, @time, @script);";
                 SqlCommand sqlCommand = new SqlCommand(query, connection);
                 sqlCommand.Parameters.AddWithValue("@id", id);
                 sqlCommand.Parameters.AddWithValue("@image", data);
                 sqlCommand.Parameters.AddWithValue("@name", name);
                 sqlCommand.Parameters.AddWithValue("@time", DateTime.Now);
+                sqlCommand.Parameters.AddWithValue("@script", script);
                 int res = await sqlCommand.ExecuteNonQueryAsync();
                 connection.Close();
                 return id;

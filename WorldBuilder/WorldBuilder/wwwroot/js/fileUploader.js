@@ -152,7 +152,7 @@ $(document).ready(function () {
         var file = fileUploader.find('input[type="file"]')[0].files[0],
             reader = new FileReader();
         reader.onload = function (event) {
-            postImage(event.target.result, fileUploader.find('input[type="file"]').val().substring(fileUploader.find('input[type="file"]').val().lastIndexOf('\\') + 1), reloadPage);
+            postImage(event.target.result, fileUploader.find('input[type="file"]').val().substring(fileUploader.find('input[type="file"]').val().lastIndexOf('\\') + 1), $('[data-role="hasScript"] input:checked').length > 0, reloadPage);
         }
         reader.readAsDataURL(file);
     });
